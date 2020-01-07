@@ -1,0 +1,31 @@
+name: 'cobertura'
+description: Report cobertura coverage reports in Pull Requests
+inputs:
+  repo_token:
+    description: 'The GITHUB_TOKEN for this repo'
+    required: true
+  path:
+    description: 'Path to the cobertura file.'
+    required: true
+    default: 'coverage.xml'
+  skip_covered:
+    description: 'If files with 100% should be skipped from report.'
+    required: true
+    default: true
+  minimum_coverage:
+    description: 'Minimum allowed coverage percentage as an integer.'
+    required: true
+  show_line:
+    description: 'Show line rate as specific column.'
+    required: true
+    default: false
+  show_branch:
+    description: 'Show branch rate as specific column.'
+    required: true
+    default: false
+runs:
+  using: 'node12'
+  main: 'index.js'
+branding:
+  icon: 'percent'
+  color: 'green'

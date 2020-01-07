@@ -1,0 +1,41 @@
+{
+  "name": "cobertura-action",
+  "private": true,
+  "version": "1.0.0",
+  "description": "GitHub Action to parse Cobertura coverage reports",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./index.js",
+    "test": "jest --collectCoverage",
+    "lint": "eslint ."
+  },
+  "jest": {
+    "coverageReporters": [
+      "text",
+      "cobertura"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/5monkeys/cobertura-action.git"
+  },
+  "keywords": [
+    "github",
+    "actions",
+    "coverage"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.2.0",
+    "@actions/github": "^2.0.0",
+    "xml2js": "^0.4.23"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "jest": "^24.9.0",
+    "nock": "^11.7.1",
+    "prettier": "^1.19.1"
+  }
+}

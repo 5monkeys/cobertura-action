@@ -1,0 +1,122 @@
+<?xml version="1.0" ?>
+<!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
+<coverage lines-valid="51" lines-covered="51" line-rate="1" branches-valid="35" branches-covered="35" branch-rate="1" timestamp="1577142692246" complexity="0" version="0.1">
+  <sources>
+    <source>/Users/hannes/dev/5monkeys/cobertura-action</source>
+  </sources>
+  <packages>
+    <class name="action.js" filename="src/action.js" line-rate="1" branch-rate="1">
+      <methods>
+        <method name="action" hits="2" signature="()V">
+          <lines>
+            <line number="9" hits="2"/>
+          </lines>
+        </method>
+        <method name="markdownReport" hits="7" signature="()V">
+          <lines>
+            <line number="34" hits="7"/>
+          </lines>
+        </method>
+        <method name="(anonymous_2)" hits="21" signature="()V">
+          <lines>
+            <line number="37" hits="21"/>
+          </lines>
+        </method>
+        <method name="(anonymous_3)" hits="35" signature="()V">
+          <lines>
+            <line number="81" hits="35"/>
+          </lines>
+        </method>
+        <method name="addComment" hits="2" signature="()V">
+          <lines>
+            <line number="88" hits="2"/>
+          </lines>
+        </method>
+      </methods>
+      <lines>
+        <line number="1" hits="1" branch="false"/>
+        <line number="2" hits="1" branch="false"/>
+        <line number="3" hits="1" branch="false"/>
+        <line number="5" hits="1" branch="false"/>
+        <line number="10" hits="2" branch="true" condition-coverage="100% (2/2)"/>
+        <line number="11" hits="2" branch="true" condition-coverage="100% (2/2)"/>
+        <line number="12" hits="1" branch="false"/>
+        <line number="13" hits="1" branch="false"/>
+        <line number="15" hits="1" branch="false"/>
+        <line number="16" hits="1" branch="false"/>
+        <line number="19" hits="1" branch="false"/>
+        <line number="20" hits="1" branch="false"/>
+        <line number="23" hits="1" branch="false"/>
+        <line number="26" hits="1" branch="false"/>
+        <line number="27" hits="1" branch="false"/>
+        <line number="36" hits="7" branch="true" condition-coverage="100% (2/2)"/>
+        <line number="37" hits="7" branch="false"/>
+        <line number="38" hits="21" branch="true" condition-coverage="100% (2/2)"/>
+        <line number="40" hits="7" branch="false"/>
+        <line number="41" hits="7" branch="false"/>
+        <line number="42" hits="14" branch="false"/>
+        <line number="43" hits="14" branch="false"/>
+        <line number="44" hits="14" branch="false"/>
+        <line number="45" hits="14" branch="false"/>
+        <line number="54" hits="7" branch="false"/>
+        <line number="55" hits="7" branch="false"/>
+        <line number="56" hits="7" branch="false"/>
+        <line number="57" hits="7" branch="false"/>
+        <line number="82" hits="35" branch="false"/>
+        <line number="85" hits="7" branch="false"/>
+        <line number="89" hits="2" branch="false"/>
+        <line number="90" hits="2" branch="false"/>
+        <line number="97" hits="1" branch="false"/>
+      </lines>
+    </class>
+    <class name="cobertura.js" filename="src/cobertura.js" line-rate="1" branch-rate="1">
+      <methods>
+        <method name="parseCoverage" hits="5" signature="()V">
+          <lines>
+            <line number="6" hits="5"/>
+          </lines>
+        </method>
+        <method name="(anonymous_1)" hits="10" signature="()V">
+          <lines>
+            <line number="16" hits="10"/>
+          </lines>
+        </method>
+        <method name="(anonymous_2)" hits="20" signature="()V">
+          <lines>
+            <line number="18" hits="20"/>
+          </lines>
+        </method>
+        <method name="(anonymous_3)" hits="20" signature="()V">
+          <lines>
+            <line number="25" hits="20"/>
+          </lines>
+        </method>
+        <method name="calculateRates" hits="25" signature="()V">
+          <lines>
+            <line number="32" hits="25"/>
+          </lines>
+        </method>
+      </methods>
+      <lines>
+        <line number="1" hits="2" branch="false"/>
+        <line number="2" hits="2" branch="false"/>
+        <line number="3" hits="2" branch="false"/>
+        <line number="4" hits="2" branch="false"/>
+        <line number="7" hits="5" branch="true" condition-coverage="100% (2/2)"/>
+        <line number="8" hits="5" branch="false"/>
+        <line number="9" hits="5" branch="false"/>
+        <line number="15" hits="5" branch="false"/>
+        <line number="16" hits="10" branch="false"/>
+        <line number="17" hits="5" branch="false"/>
+        <line number="19" hits="20" branch="false"/>
+        <line number="25" hits="20" branch="true" condition-coverage="100% (2/2)"/>
+        <line number="26" hits="5" branch="false"/>
+        <line number="33" hits="25" branch="false"/>
+        <line number="34" hits="25" branch="false"/>
+        <line number="35" hits="25" branch="true" condition-coverage="100% (4/4)"/>
+        <line number="36" hits="25" branch="false"/>
+        <line number="43" hits="2" branch="false"/>
+      </lines>
+    </class>
+  </packages>
+</coverage>
