@@ -1,4 +1,4 @@
-# Cobertura action
+# Cobertura action2
 
 ![](https://github.com/5monkeys/cobertura-action/workflows/Test/badge.svg)
 
