@@ -23,17 +23,25 @@ async function action(payload) {
   const minimumCoverage = parseInt(
     core.getInput("minimum_coverage", { required: true })
   );
+  const showClassNames = JSON.parse(
+    core.getInput("show_class_names", { required: true })
+  );
   const report = await processCoverage(path, { skipCovered });
   await addComment(pullRequest, report, {
     minimumCoverage,
     showLine,
-    showBranch
+    showBranch,
+    showClassNames
   });
 }
 
 function markdownReport(report, options) {
-  const { minimumCoverage = 100, showLine = false, showBranch = false } =
-    options || {};
+  const {
+    minimumCoverage = 100,
+    showLine = false,
+    showBranch = false,
+    showClassNames = false
+  } = options || {};
   const status = total =>
     total >= minimumCoverage ? ":white_check_mark:" : ":x:";
   // Setup files
@@ -43,7 +51,7 @@ function markdownReport(report, options) {
     const fileLines = Math.round(file.line);
     const fileBranch = Math.round(file.branch);
     files.push([
-      file.filename,
+      showClassNames ? file.name : file.filename,
       `\`${fileTotal}%\``,
       showLine ? `\`${fileLines}%\`` : undefined,
       showBranch ? `\`${fileBranch}%\`` : undefined,
