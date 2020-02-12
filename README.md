@@ -44,6 +44,10 @@ Show line rate as specific column.
 
 Show branch rate as specific column.
 
+### `show_class_names`
+
+Show class names instead of file names.
+
 ## Example usage
 
 ```yaml

@@ -7,8 +7,8 @@ const dummyReport = {
   line: 77.5,
   branch: 0,
   files: [
-    { filename: "foo.py", total: 80, line: 80, branch: 0 },
-    { filename: "bar.py", total: 75, line: 80, branch: 0 }
+    { name: "ClassFoo", filename: "foo.py", total: 80, line: 80, branch: 0 },
+    { name: "ClassBar", filename: "bar.py", total: 75, line: 80, branch: 0 }
   ]
 };
 
@@ -24,6 +24,7 @@ test("action", async () => {
   process.env["INPUT_SHOW_BRANCH"] = "false";
   process.env["INPUT_SHOW_LINE"] = "false";
   process.env["INPUT_MINIMUM_COVERAGE"] = "100";
+  process.env["INPUT_SHOW_CLASS_NAMES"] = "false";
   const prNumber = 1;
   nock("https://api.github.com")
     .post(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
@@ -79,6 +80,15 @@ _Minimum allowed coverage is \`70%\`_`);
 | bar.py | \`75%\` | :x: |
 
 _Minimum allowed coverage is \`80%\`_`);
+
+  expect(markdownReport(dummyReport, { showClassNames: true }))
+    .toBe(`| File | Coverage |   |
+| - | :-: | :-: |
+| **All files** | \`78%\` | :x: |
+| ClassFoo | \`80%\` | :x: |
+| ClassBar | \`75%\` | :x: |
+
+_Minimum allowed coverage is \`100%\`_`);
 });
 
 test("addComment", async () => {

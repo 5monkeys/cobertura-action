@@ -23,6 +23,10 @@ inputs:
     description: 'Show branch rate as specific column.'
     required: true
     default: false
+  show_class_names:
+    description: 'Show class names instead of file names.'
+    required: true
+    default: false
 runs:
   using: 'node12'
   main: 'index.js'
