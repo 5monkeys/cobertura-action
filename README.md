@@ -11,6 +11,9 @@ Many coverage tools can be configured to output cobertura reports:
 * [Maven](https://www.mojohaus.org/cobertura-maven-plugin/)
 * [simplecov](https://github.com/colszowka/simplecov/blob/master/doc/alternate-formatters.md#simplecov-cobertura)
 
+Note that this action can only run on pull requests being opened from the same repository. This action will not currently work for pull requests from forks -- like is common in open source projects -- because the token for forked pull request workflows does not have write permissions. Hopefully GitHub will have a solution for this in the future.
+
+
 ## How it looks like
 
 ![alt text](img/comment.png "Pull request comment with metrics")
