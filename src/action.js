@@ -59,6 +59,16 @@ function markdownReport(report, options) {
     ]);
   }
   // Construct table
+  /*
+  | File          | Coverage |                    |
+  |---------------|:--------:|:------------------:|
+  | **All files** | `78%`    | :x:                |
+  | foo.py        | `80%`    | :white_check_mark: |
+  | bar.py        | `75%`    | :x:                |
+
+  _Minimum allowed coverage is `80%`_
+  */
+
   const total = Math.round(report.total);
   const linesTotal = Math.round(report.line);
   const branchTotal = Math.round(report.branch);
