@@ -48,6 +48,10 @@ Show branch rate as specific column.
 
 Show class names instead of file names.
 
+### `only_changed_files`
+
+Only show coverage for changed files.
+
 ## Example usage
 
 ```yaml

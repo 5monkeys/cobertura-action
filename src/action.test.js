@@ -25,10 +25,34 @@ test("action", async () => {
   process.env["INPUT_SHOW_LINE"] = "false";
   process.env["INPUT_MINIMUM_COVERAGE"] = "100";
   process.env["INPUT_SHOW_CLASS_NAMES"] = "false";
+  process.env["INPUT_ONLY_CHANGED_FILES"] = "false";
   const prNumber = 1;
   nock("https://api.github.com")
     .post(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
     .reply(200);
+  await action({ pull_request: { number: prNumber } });
+  await action();
+});
+
+test("action only changes", async () => {
+  const { action } = require("./action");
+  process.env["INPUT_PATH"] = "./src/fixtures/test-branch.xml";
+  process.env["INPUT_SKIP_COVERED"] = "true";
+  process.env["INPUT_SHOW_BRANCH"] = "false";
+  process.env["INPUT_SHOW_LINE"] = "false";
+  process.env["INPUT_MINIMUM_COVERAGE"] = "100";
+  process.env["INPUT_SHOW_CLASS_NAMES"] = "false";
+  process.env["INPUT_ONLY_CHANGED_FILES"] = "true";
+  const prNumber = 1;
+  nock("https://api.github.com")
+    .post(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
+    .reply(200)
+    .get(`/repos/${owner}/${repo}/pulls/${prNumber}/files`)
+    .reply(200, [
+      {
+        filename: "file1.txt"
+      }
+    ]);
   await action({ pull_request: { number: prNumber } });
   await action();
 });
@@ -43,6 +67,15 @@ test("markdownReport", () => {
 | bar.py | \`75%\` | :white_check_mark: |
 
 _Minimum allowed coverage is \`70%\`_`);
+
+  expect(markdownReport(dummyReport)).toBe(`| File | Coverage |   |
+| - | :-: | :-: |
+| **All files** | \`78%\` | :x: |
+| foo.py | \`80%\` | :x: |
+| bar.py | \`75%\` | :x: |
+
+_Minimum allowed coverage is \`100%\`_`);
+
   expect(markdownReport(dummyReport, { minimumCoverage: 70, showLine: true }))
     .toBe(`| File | Coverage | Lines |   |
 | - | :-: | :-: | :-: |
@@ -89,6 +122,28 @@ _Minimum allowed coverage is \`80%\`_`);
 | ClassBar | \`75%\` | :x: |
 
 _Minimum allowed coverage is \`100%\`_`);
+
+  expect(markdownReport(dummyReport, { filteredFiles: ["bar.py"] }))
+    .toBe(`| File | Coverage |   |
+| - | :-: | :-: |
+| **All files** | \`78%\` | :x: |
+| bar.py | \`75%\` | :x: |
+
+_Minimum allowed coverage is \`100%\`_`);
+
+  expect(markdownReport(dummyReport, { filteredFiles: ["README.md"] }))
+    .toBe(`| File | Coverage |   |
+| - | :-: | :-: |
+| **All files** | \`78%\` | :x: |
+
+_Minimum allowed coverage is \`100%\`_`);
+
+  expect(markdownReport(dummyReport, { filteredFiles: [] }))
+    .toBe(`| File | Coverage |   |
+| - | :-: | :-: |
+| **All files** | \`78%\` | :x: |
+
+_Minimum allowed coverage is \`100%\`_`);
 });
 
 test("addComment", async () => {
@@ -97,5 +152,18 @@ test("addComment", async () => {
   nock("https://api.github.com")
     .post(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
     .reply(200);
-  await addComment({ number: prNumber }, dummyReport);
+  await addComment({ number: prNumber }, "foo");
+});
+
+test("listChangedFiles", async () => {
+  const { listChangedFiles } = require("./action");
+  const prNumber = "5";
+  nock("https://api.github.com")
+    .get(`/repos/${owner}/${repo}/pulls/${prNumber}/files`)
+    .reply(200, [
+      {
+        filename: "file1.txt"
+      }
+    ]);
+  await listChangedFiles({ number: prNumber });
 });

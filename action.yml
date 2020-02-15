@@ -27,6 +27,10 @@ inputs:
     description: 'Show class names instead of file names.'
     required: true
     default: false
+  only_changed_files:
+    description: 'Only show coverage for changed files.'
+    required: true
+    default: false
 runs:
   using: 'node12'
   main: 'index.js'
