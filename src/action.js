@@ -26,13 +26,23 @@ async function action(payload) {
   const showClassNames = JSON.parse(
     core.getInput("show_class_names", { required: true })
   );
+  const onlyChangedFiles = JSON.parse(
+    core.getInput("only_changed_files", { required: true })
+  );
+
+  const changedFiles = onlyChangedFiles
+    ? await listChangedFiles(pullRequest)
+    : null;
+
   const report = await processCoverage(path, { skipCovered });
-  await addComment(pullRequest, report, {
+  const comment = markdownReport(report, {
     minimumCoverage,
     showLine,
     showBranch,
-    showClassNames
+    showClassNames,
+    filteredFiles: changedFiles
   });
+  await addComment(pullRequest, comment);
 }
 
 function markdownReport(report, options) {
@@ -40,13 +50,16 @@ function markdownReport(report, options) {
     minimumCoverage = 100,
     showLine = false,
     showBranch = false,
-    showClassNames = false
+    showClassNames = false,
+    filteredFiles = null
   } = options || {};
   const status = total =>
     total >= minimumCoverage ? ":white_check_mark:" : ":x:";
   // Setup files
   const files = [];
-  for (const file of report.files) {
+  for (const file of report.files.filter(
+    file => filteredFiles == null || filteredFiles.includes(file.filename)
+  )) {
     const fileTotal = Math.round(file.total);
     const fileLines = Math.round(file.line);
     const fileBranch = Math.round(file.branch);
@@ -103,8 +116,7 @@ function markdownReport(report, options) {
   return `${table}\n\n_Minimum allowed coverage is \`${minimumCoverage}%\`_`;
 }
 
-async function addComment(pullRequest, report, options) {
-  const comment = markdownReport(report, options);
+async function addComment(pullRequest, comment) {
   await client.issues.createComment({
     issue_number: pullRequest.number,
     body: comment,
@@ -112,8 +124,17 @@ async function addComment(pullRequest, report, options) {
   });
 }
 
+async function listChangedFiles(pullRequest) {
+  const files = await client.pulls.listFiles({
+    pull_number: pullRequest.number,
+    ...github.context.repo
+  });
+  return files.data.map(file => file.filename);
+}
+
 module.exports = {
   action,
   markdownReport,
-  addComment
+  addComment,
+  listChangedFiles
 };
