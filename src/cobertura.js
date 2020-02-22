@@ -1,11 +1,11 @@
-const fs = require("fs");
+const fs = require("fs").promises;
 const xml2js = require("xml2js");
 const util = require("util");
 const parseString = util.promisify(xml2js.parseString);
 
 async function processCoverage(path, options) {
   options = options || { skipCovered: false };
-  const xml = fs.readFileSync(path, "utf-8");
+  const xml = await fs.readFile(path, "utf-8");
   const { coverage } = await parseString(xml, {
     explicitArray: false,
     mergeAttrs: true
@@ -13,6 +13,7 @@ async function processCoverage(path, options) {
   const { packages } = coverage;
   const classes = processPackages(packages);
   const files = classes
+    .filter(Boolean)
     .map(klass => {
       return {
         ...calculateRates(klass),
