@@ -13,6 +13,7 @@ async function processCoverage(path, options) {
   const { packages } = coverage;
   const classes = processPackages(packages);
   const files = classes
+    .filter(Boolean)
     .map(klass => {
       return {
         ...calculateRates(klass),
