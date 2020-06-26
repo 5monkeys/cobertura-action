@@ -133,7 +133,8 @@ async function addComment(pullRequest, body, reportName) {
   });
   const commentFilter = reportName ? reportName : credits;
   const comment = comments.data.find(comment =>
-    comment.body.includes(commentFilter));
+    comment.body.includes(commentFilter)
+  );
   if (comment != null) {
     await client.issues.updateComment({
       comment_id: comment.id,
