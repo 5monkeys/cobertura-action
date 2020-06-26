@@ -52,6 +52,10 @@ Show class names instead of file names.
 
 Only show coverage for changed files.
 
+### `report_name`
+
+Use a unique name for the report and comment.
+
 ## Example usage
 
 ```yaml
