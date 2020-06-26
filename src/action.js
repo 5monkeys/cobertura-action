@@ -132,7 +132,8 @@ async function addComment(pullRequest, body, reportName) {
     ...github.context.repo
   });
   const commentFilter = reportName ? reportName : credits;
-  const comment = comments.data.find(comment => comment.body.includes(commentFilter));
+  const comment = comments.data.find(comment =>
+    comment.body.includes(commentFilter));
   if (comment != null) {
     await client.issues.updateComment({
       comment_id: comment.id,
