@@ -6,7 +6,7 @@ const parseString = util.promisify(xml2js.parseString);
 
 async function processCoverage(path, options) {
   options = options || { skipCovered: false };
-  
+
   if (glob.hasMagic(path)) {
     const paths = glob.sync(path);
     path = paths[0];
