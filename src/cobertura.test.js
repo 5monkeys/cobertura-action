@@ -147,3 +147,34 @@ test("processCoverage(test-python.xml, {skipCovered: false})", async () => {
   expect(files[0].filename).toBe("source.py");
   expect(files[0].name).toBe("source.py");
 });
+
+test("processCoverage(glob-test-branch.xml, {skipCovered: false})", async () => {
+  const report = await processCoverage("./src/**/test-branch.xml");
+  expect(report.total).toBe(82.5);
+  const files = report.files;
+  expect(files.length).toBe(4);
+
+  expect(files[0].total).toBe(100);
+  expect(files[0].branch).toBe(100);
+  expect(files[0].line).toBe(100);
+  expect(files[0].filename).toBe("Main.java");
+  expect(files[0].name).toBe("Main");
+
+  expect(files[1].total).toBe(87.5);
+  expect(files[1].branch).toBe(83.33333333333334);
+  expect(files[1].line).toBe(91.66666666666666);
+  expect(files[1].filename).toBe("search/BinarySearch.java");
+  expect(files[1].name).toBe("search.BinarySearch");
+
+  expect(files[2].total).toBe(100);
+  expect(files[2].branch).toBe(100);
+  expect(files[2].line).toBe(100);
+  expect(files[2].filename).toBe("search/ISortedArraySearch.java");
+  expect(files[2].name).toBe("search.ISortedArraySearch");
+
+  expect(files[3].total).toBe(69.04761904761904);
+  expect(files[3].branch).toBe(66.66666666666666);
+  expect(files[3].line).toBe(71.42857142857143);
+  expect(files[3].filename).toBe("search/LinearSearch.java");
+  expect(files[3].name).toBe("search.LinearSearch");
+});

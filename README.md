@@ -26,7 +26,7 @@ The GITHUB_TOKEN. See [details](https://help.github.com/en/articles/virtual-envi
 
 ### `path`
 
-The to the cobertura report. Defaults to `coverage.xml`.
+The to the cobertura report. Defaults to `coverage.xml`. If a glob pattern is provided it will take the first match.
 
 ### `skip_covered`
 
