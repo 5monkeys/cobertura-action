@@ -52,6 +52,10 @@ Show class names instead of file names.
 
 Only show coverage for changed files.
 
+### `pull_request_number` **Optional**
+
+Pull request number associated with the report. This property should be used when workflow trigger is different than `pull_request`.
+
 ## Example usage
 
 ```yaml
