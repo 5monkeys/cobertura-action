@@ -56,13 +56,11 @@ test("action passing pull request number directly", async () => {
     .get(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
     .reply(200, [{ body: "some body", id: 123 }])
     .get(`/repos/${owner}/${repo}/pulls/${prNumber}`)
-    .reply(200, 
-      { 
-        head: { 
-          sha: "deadbeef" 
-        } 
+    .reply(200, {
+      head: {
+        sha: "deadbeef"
       }
-    );
+    });
   await action({
     push: { ref: "master" }
   });
