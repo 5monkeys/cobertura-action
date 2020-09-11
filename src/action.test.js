@@ -26,6 +26,7 @@ test("action", async () => {
   process.env["INPUT_MINIMUM_COVERAGE"] = "100";
   process.env["INPUT_SHOW_CLASS_NAMES"] = "false";
   process.env["INPUT_ONLY_CHANGED_FILES"] = "false";
+  process.env["INPUT_PULL_REQUEST_NUMBER"] = "";
   const prNumber = 1;
   nock("https://api.github.com")
     .post(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
@@ -48,16 +49,23 @@ test("action passing pull request number directly", async () => {
   process.env["INPUT_MINIMUM_COVERAGE"] = "100";
   process.env["INPUT_SHOW_CLASS_NAMES"] = "false";
   process.env["INPUT_ONLY_CHANGED_FILES"] = "false";
-  process.env["PULL_REQUEST_NUMBER"] = prNumber;
+  process.env["INPUT_PULL_REQUEST_NUMBER"] = prNumber;
   nock("https://api.github.com")
     .post(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
     .reply(200)
     .get(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
-    .reply(200, [{ body: "some body", id: 123 }]);
+    .reply(200, [{ body: "some body", id: 123 }])
+    .get(`/repos/${owner}/${repo}/pulls/${prNumber}`)
+    .reply(200, 
+      { 
+        head: { 
+          sha: "deadbeef" 
+        } 
+      }
+    );
   await action({
     push: { ref: "master" }
   });
-  await action();
 });
 
 test("action only changes", async () => {
@@ -69,6 +77,7 @@ test("action only changes", async () => {
   process.env["INPUT_MINIMUM_COVERAGE"] = "100";
   process.env["INPUT_SHOW_CLASS_NAMES"] = "false";
   process.env["INPUT_ONLY_CHANGED_FILES"] = "true";
+  process.env["INPUT_PULL_REQUEST_NUMBER"] = "";
   const prNumber = 1;
   nock("https://api.github.com")
     .post(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)

@@ -13,11 +13,11 @@ async function action(payload) {
   let commit;
   if (pullRequestNumberInput != "") {
     pullRequestNumber = parseInt(pullRequestNumberInput);
-    const { data: { head: { sha } } } = await client.pulls.get({
+    const { data } = await client.pulls.get({
       pull_number: pullRequestNumber,
       ...github.context.repo
     });
-    commit = sha
+    commit = data.head.sha
   } else {
     const { pull_request: pullRequest } = payload || {};
     if (pullRequest == null) {
