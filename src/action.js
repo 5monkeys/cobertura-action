@@ -30,6 +30,7 @@ async function action(payload) {
   const onlyChangedFiles = JSON.parse(
     core.getInput("only_changed_files", { required: true })
   );
+  const reportName = core.getInput("report_name", { required: false });
 
   const changedFiles = onlyChangedFiles
     ? await listChangedFiles(pullRequest)
@@ -44,9 +45,10 @@ async function action(payload) {
     showLine,
     showBranch,
     showClassNames,
-    filteredFiles: changedFiles
+    filteredFiles: changedFiles,
+    reportName
   });
-  await addComment(pullRequest, comment);
+  await addComment(pullRequest, comment, reportName);
 }
 
 function markdownReport(report, commit, options) {
@@ -55,7 +57,8 @@ function markdownReport(report, commit, options) {
     showLine = false,
     showBranch = false,
     showClassNames = false,
-    filteredFiles = null
+    filteredFiles = null,
+    reportName = "Coverage Report"
   } = options || {};
   const status = total =>
     total >= minimumCoverage ? ":white_check_mark:" : ":x:";
@@ -119,15 +122,19 @@ function markdownReport(report, commit, options) {
     .join("\n");
   const minimumCoverageText = `_Minimum allowed coverage is \`${minimumCoverage}%\`_`;
   const footerText = `<p align="right">${credits} against ${commit} </p>`;
-  return `${table}\n\n${minimumCoverageText}\n\n${footerText}`;
+  const titleText = `<strong>${reportName}</strong>`;
+  return `${titleText}\n\n${table}\n\n${minimumCoverageText}\n\n${footerText}`;
 }
 
-async function addComment(pullRequest, body) {
+async function addComment(pullRequest, body, reportName) {
   const comments = await client.issues.listComments({
     issue_number: pullRequest.number,
     ...github.context.repo
   });
-  const comment = comments.data.find(comment => comment.body.includes(credits));
+  const commentFilter = reportName ? reportName : credits;
+  const comment = comments.data.find(comment =>
+    comment.body.includes(commentFilter)
+  );
   if (comment != null) {
     await client.issues.updateComment({
       comment_id: comment.id,
