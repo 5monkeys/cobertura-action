@@ -1,10 +1,17 @@
 const fs = require("fs").promises;
 const xml2js = require("xml2js");
 const util = require("util");
+const glob = require("glob-promise");
 const parseString = util.promisify(xml2js.parseString);
 
 async function processCoverage(path, options) {
   options = options || { skipCovered: false };
+
+  if (glob.hasMagic(path)) {
+    const paths = await glob(path);
+    path = paths[0];
+  }
+
   const xml = await fs.readFile(path, "utf-8");
   const { coverage } = await parseString(xml, {
     explicitArray: false,

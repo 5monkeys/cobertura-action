@@ -26,7 +26,7 @@ The GITHUB_TOKEN. See [details](https://help.github.com/en/articles/virtual-envi
 
 ### `path`
 
-The to the cobertura report. Defaults to `coverage.xml`.
+The to the cobertura report. Defaults to `coverage.xml`. If a glob pattern is provided it will take the first match.
 
 ### `skip_covered`
 
@@ -51,6 +51,10 @@ Show class names instead of file names.
 ### `only_changed_files`
 
 Only show coverage for changed files.
+
+### `report_name`
+
+Use a unique name for the report and comment.
 
 ### `pull_request_number` **Optional**
 
