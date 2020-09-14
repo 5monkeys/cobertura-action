@@ -31,6 +31,10 @@ inputs:
     description: 'Only show coverage for changed files.'
     required: true
     default: false
+  pull_request_number:
+    description: 'Pull request number associated with the report. This property should be used when workflow trigger is different than pull_request.'
+    required: false
+    default: ''
 runs:
   using: 'node12'
   main: 'index.js'

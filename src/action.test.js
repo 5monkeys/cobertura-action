@@ -26,6 +26,7 @@ test("action", async () => {
   process.env["INPUT_MINIMUM_COVERAGE"] = "100";
   process.env["INPUT_SHOW_CLASS_NAMES"] = "false";
   process.env["INPUT_ONLY_CHANGED_FILES"] = "false";
+  process.env["INPUT_PULL_REQUEST_NUMBER"] = "";
   const prNumber = 1;
   nock("https://api.github.com")
     .post(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
@@ -38,6 +39,33 @@ test("action", async () => {
   await action();
 });
 
+test("action passing pull request number directly", async () => {
+  const { action } = require("./action");
+  const prNumber = 123;
+  process.env["INPUT_PATH"] = "./src/fixtures/test-branch.xml";
+  process.env["INPUT_SKIP_COVERED"] = "true";
+  process.env["INPUT_SHOW_BRANCH"] = "false";
+  process.env["INPUT_SHOW_LINE"] = "false";
+  process.env["INPUT_MINIMUM_COVERAGE"] = "100";
+  process.env["INPUT_SHOW_CLASS_NAMES"] = "false";
+  process.env["INPUT_ONLY_CHANGED_FILES"] = "false";
+  process.env["INPUT_PULL_REQUEST_NUMBER"] = prNumber;
+  nock("https://api.github.com")
+    .post(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
+    .reply(200)
+    .get(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
+    .reply(200, [{ body: "some body", id: 123 }])
+    .get(`/repos/${owner}/${repo}/pulls/${prNumber}`)
+    .reply(200, {
+      head: {
+        sha: "deadbeef"
+      }
+    });
+  await action({
+    push: { ref: "master" }
+  });
+});
+
 test("action only changes", async () => {
   const { action } = require("./action");
   process.env["INPUT_PATH"] = "./src/fixtures/test-branch.xml";
@@ -47,6 +75,7 @@ test("action only changes", async () => {
   process.env["INPUT_MINIMUM_COVERAGE"] = "100";
   process.env["INPUT_SHOW_CLASS_NAMES"] = "false";
   process.env["INPUT_ONLY_CHANGED_FILES"] = "true";
+  process.env["INPUT_PULL_REQUEST_NUMBER"] = "";
   const prNumber = 1;
   nock("https://api.github.com")
     .post(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
@@ -246,7 +275,7 @@ test("addComment", async () => {
     .reply(200)
     .get(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
     .reply(200, [{ body: "some body", id: 123 }]);
-  await addComment({ number: prNumber }, "foo", "bar");
+  await addComment(prNumber, "foo", "bar");
 });
 
 test("addComment with update", async () => {
@@ -270,7 +299,7 @@ _Minimum allowed coverage is \`100%\`_
     .reply(200, [{ body: oldComment, id: commentId }])
     .patch(`/repos/${owner}/${repo}/issues/comments/${commentId}`)
     .reply(200, [{ body: oldComment, id: commentId }]);
-  await addComment({ number: prNumber }, "foo", "bar");
+  await addComment(prNumber, "foo", "bar");
 });
 
 test("addComment for specific report", async () => {
@@ -291,7 +320,7 @@ _Minimum allowed coverage is \`100%\`_
     .reply(200)
     .get(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
     .reply(200, [{ body: report1Comment, id: commentId }]);
-  await addComment({ number: prNumber }, "foo", "Report2");
+  await addComment(prNumber, "foo", "Report2");
 });
 
 test("addComment with update for specific report", async () => {
@@ -326,7 +355,7 @@ _Minimum allowed coverage is \`100%\`_
     ])
     .patch(`/repos/${owner}/${repo}/issues/comments/${comment2Id}`)
     .reply(200, [{ body: report2Comment, id: comment2Id }]);
-  await addComment({ number: prNumber }, "foo", "Report2");
+  await addComment(prNumber, "foo", "Report2");
 });
 
 test("listChangedFiles", async () => {
@@ -339,5 +368,5 @@ test("listChangedFiles", async () => {
         filename: "file1.txt"
       }
     ]);
-  await listChangedFiles({ number: prNumber });
+  await listChangedFiles(prNumber);
 });
