@@ -178,3 +178,59 @@ test("processCoverage(glob-test-branch.xml, {skipCovered: false})", async () => 
   expect(files[3].filename).toBe("search/LinearSearch.java");
   expect(files[3].name).toBe("search.LinearSearch");
 });
+
+test("processCoverage(test-missing-lines.xml, {skipCovered: true})", async () => {
+  const report = await processCoverage("./src/**/test-missing-lines.xml");
+  expect(report.total).toBe(51.24999999999999);
+  const files = report.files;
+  expect(files.length).toBe(8);
+
+  expect(files[0].filename).toBe("all_lines_covered.py");
+  expect(files[0].name).toBe("all_lines_covered.py");
+  expect(files[0].total).toBe(100);
+  expect(files[0].branch).toBe(0);
+  expect(files[0].line).toBe(100);
+  expect(files[0].missing).toBe("");
+
+  expect(files[1].filename).toBe("miss_at_start.py");
+  expect(files[1].total).toBe(80);
+  expect(files[1].branch).toBe(0);
+  expect(files[1].line).toBe(80);
+  expect(files[1].missing).toBe("1-3");
+
+  expect(files[2].filename).toBe("miss_at_end.py");
+  expect(files[2].total).toBe(80);
+  expect(files[2].branch).toBe(0);
+  expect(files[2].line).toBe(80);
+  expect(files[2].missing).toBe("9-10");
+
+  expect(files[3].filename).toBe("single_line_gaps.py");
+  expect(files[3].total).toBe(70);
+  expect(files[3].branch).toBe(0);
+  expect(files[3].line).toBe(70);
+  expect(files[3].missing).toBe("3, 5, 9");
+
+  expect(files[4].filename).toBe("multi_line_gaps.py");
+  expect(files[4].total).toBe(30);
+  expect(files[4].branch).toBe(0);
+  expect(files[4].line).toBe(30);
+  expect(files[4].missing).toBe("4-5, 7-9, 15-18");
+
+  expect(files[5].filename).toBe("unsorted_lines.py");
+  expect(files[5].total).toBe(50);
+  expect(files[5].branch).toBe(0);
+  expect(files[5].line).toBe(50);
+  expect(files[5].missing).toBe("3-4, 6, 8-9");
+
+  expect(files[6].filename).toBe("no_lines.py");
+  expect(files[6].total).toBe(0);
+  expect(files[6].branch).toBe(0);
+  expect(files[6].line).toBe(0);
+  expect(files[6].missing).toBe("");
+
+  expect(files[7].filename).toBe("single_line.py");
+  expect(files[7].total).toBe(0);
+  expect(files[7].branch).toBe(0);
+  expect(files[7].line).toBe(0);
+  expect(files[7].missing).toBe("4");
+});

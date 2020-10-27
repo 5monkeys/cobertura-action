@@ -28,6 +28,15 @@ async function action(payload) {
   const showClassNames = JSON.parse(
     core.getInput("show_class_names", { required: true })
   );
+  const showMissing = JSON.parse(
+    core.getInput("show_missing", { required: true })
+  );
+  let showMissingMaxLength = core.getInput("show_missing_max_length", {
+    required: false
+  });
+  showMissingMaxLength = showMissingMaxLength
+    ? parseInt(showMissingMaxLength)
+    : -1;
   const onlyChangedFiles = JSON.parse(
     core.getInput("only_changed_files", { required: true })
   );
@@ -43,6 +52,8 @@ async function action(payload) {
     showLine,
     showBranch,
     showClassNames,
+    showMissing,
+    showMissingMaxLength,
     filteredFiles: changedFiles,
     reportName
   });
@@ -55,11 +66,15 @@ function markdownReport(report, commit, options) {
     showLine = false,
     showBranch = false,
     showClassNames = false,
+    showMissing = false,
+    showMissingMaxLength = -1,
     filteredFiles = null,
     reportName = "Coverage Report"
   } = options || {};
   const status = total =>
     total >= minimumCoverage ? ":white_check_mark:" : ":x:";
+  const crop = (str, at) =>
+    str.length > at ? str.slice(0, at).concat("...") : str;
   // Setup files
   const files = [];
   for (const file of report.files.filter(
@@ -68,12 +83,17 @@ function markdownReport(report, commit, options) {
     const fileTotal = Math.round(file.total);
     const fileLines = Math.round(file.line);
     const fileBranch = Math.round(file.branch);
+    const fileMissing =
+      showMissingMaxLength > 0
+        ? crop(file.missing, showMissingMaxLength)
+        : file.missing;
     files.push([
       showClassNames ? file.name : file.filename,
       `\`${fileTotal}%\``,
       showLine ? `\`${fileLines}%\`` : undefined,
       showBranch ? `\`${fileBranch}%\`` : undefined,
-      status(fileTotal)
+      status(fileTotal),
+      showMissing ? `\`${fileMissing}\`` : undefined
     ]);
   }
   // Construct table
@@ -96,21 +116,24 @@ function markdownReport(report, commit, options) {
       "Coverage",
       showLine ? "Lines" : undefined,
       showBranch ? "Branches" : undefined,
-      " "
+      " ",
+      showMissing ? "Missing" : undefined
     ],
     [
       "-",
       ":-:",
       showLine ? ":-:" : undefined,
       showBranch ? ":-:" : undefined,
-      ":-:"
+      ":-:",
+      showMissing ? ":-:" : undefined
     ],
     [
       "**All files**",
       `\`${total}%\``,
       showLine ? `\`${linesTotal}%\`` : undefined,
       showBranch ? `\`${branchTotal}%\`` : undefined,
-      status(total)
+      status(total),
+      showMissing ? " " : undefined
     ],
     ...files
   ]

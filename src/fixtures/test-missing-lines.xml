@@ -1,0 +1,154 @@
+<?xml version="1.0" ?>
+<coverage branch-rate="0" line-rate="0.5125" timestamp="1460488624050" version="4.0.3">
+  <sources>
+    <source></source>
+  </sources>
+  <packages>
+    <package branch-rate="0" complexity="0" line-rate="0.5125" name=".">
+      <classes>
+        <class branch-rate="0" complexity="0" filename="all_lines_covered.py" line-rate="1.0" name="all_lines_covered.py">
+          <methods>
+            <method name="my_func" line-rate="1.0" branch-rate="0">
+              <lines>
+                <line hits="1" number="3" branch="false"/>
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line hits="1" number="1" branch="false"/>
+            <line hits="1" number="3" branch="false"/>
+            <line hits="1" number="5" branch="false"/>
+            <line hits="1" number="6" branch="false"/>
+            <line hits="1" number="7" branch="false"/>
+            <line hits="1" number="9" branch="false"/>
+            <line hits="1" number="10" branch="false"/>
+            <line hits="1" number="12" branch="false"/>
+            <line hits="1" number="13" branch="false"/>
+            <line hits="1" number="15" branch="false"/>
+          </lines>
+        </class>
+
+        <class branch-rate="0" complexity="0" filename="miss_at_start.py" line-rate="0.8" name="miss_at_start.py">
+          <methods>
+            <method name="my_func1" line-rate="0.0" branch-rate="0.0">
+              <lines>
+                <line hits="0" number="1" branch="false"/>
+              </lines>
+            </method>
+            <method name="my_func2" line-rate="0.0" branch-rate="0.0">
+              <lines>
+                <line hits="0" number="3" branch="false"/>
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line hits="0" number="1" branch="false"/>
+            <line hits="0" number="3" branch="false"/>
+            <line hits="1" number="4" branch="false"/>
+            <line hits="1" number="5" branch="false"/>
+            <line hits="1" number="6" branch="false"/>
+            <line hits="1" number="7" branch="false"/>
+            <line hits="1" number="9" branch="false"/>
+            <line hits="1" number="10" branch="false"/>
+            <line hits="1" number="12" branch="false"/>
+            <line hits="1" number="13" branch="false"/>
+          </lines>
+        </class>
+
+        <class branch-rate="0" complexity="0" filename="miss_at_end.py" line-rate="0.8" name="miss_at_end.py">
+          <methods>
+            <method name="my_func" line-rate="1.0" branch-rate="0">
+              <lines>
+                <line hits="1" number="1" branch="false"/>
+                <line hits="1" number="2" branch="false"/>
+                <line hits="1" number="3" branch="false"/>
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line hits="1" number="1" branch="false"/>
+            <line hits="1" number="2" branch="false"/>
+            <line hits="1" number="3" branch="false"/>
+            <line hits="1" number="4" branch="false"/>
+            <line hits="1" number="5" branch="false"/>
+            <line hits="1" number="6" branch="false"/>
+            <line hits="1" number="7" branch="false"/>
+            <line hits="1" number="8" branch="false"/>
+            <line hits="0" number="9" branch="false"/>
+            <line hits="0" number="10" branch="false"/>
+          </lines>
+        </class>
+
+        <class branch-rate="0" complexity="0" filename="single_line_gaps.py" line-rate="0.7" name="single_line_gaps.py">
+          <methods>
+            <method name="my_func" line-rate="0.5" branch-rate="0">
+              <lines>
+                <line hits="1" number="1" branch="false"/>
+                <line hits="0" number="3" branch="false"/>
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line hits="1" number="1" branch="false"/>
+            <line hits="0" number="3" branch="false"/>
+            <line hits="1" number="4" branch="false"/>
+            <line hits="0" number="5" branch="false"/>
+            <line hits="1" number="6" branch="false"/>
+            <line hits="1" number="7" branch="false"/>
+            <line hits="0" number="9" branch="false"/>
+            <line hits="1" number="10" branch="false"/>
+            <line hits="1" number="12" branch="false"/>
+            <line hits="1" number="13" branch="false"/>
+          </lines>
+        </class>
+
+        <class branch-rate="0" complexity="0" filename="multi_line_gaps.py" line-rate="0.3" name="multi_line_gaps.py">
+          <lines>
+            <line hits="1" number="3" branch="false"/>
+            <line hits="0" number="4" branch="false"/>
+            <line hits="0" number="5" branch="false"/>
+            <line hits="1" number="6" branch="false"/>
+            <line hits="0" number="7" branch="false"/>
+            <line hits="0" number="9" branch="false"/>
+            <line hits="1" number="11" branch="false"/>
+            <line hits="0" number="15" branch="false"/>
+            <line hits="0" number="16" branch="false"/>
+            <line hits="0" number="18" branch="false"/>
+          </lines>
+        </class>
+
+        <class branch-rate="0" complexity="0" filename="unsorted_lines.py" line-rate="0.5" name="unsorted_lines.py">
+          <methods>
+            <method name="my_func" line-rate="1.0" branch-rate="0">
+              <lines>
+                <line hits="1" number="5" branch="false"/>
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line hits="0" number="4" branch="false"/>
+            <line hits="0" number="3" branch="false"/>
+            <line hits="1" number="7" branch="false"/>
+            <line hits="1" number="11" branch="false"/>
+            <line hits="1" number="15" branch="false"/>
+            <line hits="0" number="8" branch="false"/>
+            <line hits="1" number="5" branch="false"/>
+            <line hits="0" number="9" branch="false"/>
+            <line hits="1" number="18" branch="false"/>
+            <line hits="0" number="6" branch="false"/>
+          </lines>
+        </class>
+
+        <class branch-rate="0" complexity="0" filename="no_lines.py" line-rate="0.0" name="no_lines.py">
+          <lines/>
+        </class>
+
+        <class branch-rate="0" complexity="0" filename="single_line.py" line-rate="0.0" name="single_line.py">
+          <lines>
+            <line hits="0" number="4" branch="false"/>
+          </lines>
+        </class>
+      </classes>
+    </package>
+  </packages>
+</coverage>

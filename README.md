@@ -51,6 +51,18 @@ Show branch rate as specific column.
 
 Show class names instead of file names.
 
+### `show_missing`
+
+Show line numbers of statements, per module, that weren't executed.
+
+### `show_missing_max_length`
+
+Crop missing line numbers strings that exceeds this length, provided as an integer.
+
+Default is no crop.
+
+(Note: "..." is appended to a cropped string)
+
 ### `only_changed_files`
 
 Only show coverage for changed files.
