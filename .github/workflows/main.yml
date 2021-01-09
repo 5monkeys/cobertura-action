@@ -2,7 +2,7 @@ name: Test
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [ opened, synchronize, reopened ]
     branches:
       - master
   push:
@@ -13,18 +13,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '12.x'
-    - run: npm ci
-    - run: npm run lint
-    - run: npm test
-    - name: coverage
-      if: github.event_name == 'pull_request'
-      uses: ./
-      with:
-        path: coverage/cobertura-coverage.xml
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        minimum_coverage: 75
-
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: coverage/cobertura-coverage.xml
