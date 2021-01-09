@@ -8,7 +8,9 @@
     "start": "node ./index.js",
     "test": "jest --collectCoverage",
     "lint": "eslint src/",
-    "format": "eslint --fix src/"
+    "format": "eslint --fix src/",
+    "package": "ncc build index.js",
+    "package:watch": "ncc build index.js --watch"
   },
   "jest": {
     "coverageReporters": [
@@ -33,6 +35,7 @@
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
+    "@zeit/ncc": "^0.22.3",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
