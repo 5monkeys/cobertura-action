@@ -11,7 +11,10 @@ Many coverage tools can be configured to output cobertura reports:
 * [Maven](https://www.mojohaus.org/cobertura-maven-plugin/)
 * [simplecov](https://github.com/colszowka/simplecov/blob/master/doc/alternate-formatters.md#simplecov-cobertura)
 
-Note that this action can only run on pull requests being opened from the same repository. This action will not currently work for pull requests from forks -- like is common in open source projects -- because the token for forked pull request workflows does not have write permissions. Hopefully GitHub will have a solution for this in the future.
+This action will not currently work when triggered by pull requests from forks, like is common in open source projects.
+This is because the token for forked pull request workflows does not have write permissions on the target repository.
+Hopefully GitHub will have a solution for this in the future. In the meantime one can use utilize multiple workflows and
+artifacts to circumvent this. See the workflows in this project for an implementation example and this blog post https://securitylab.github.com/research/github-actions-preventing-pwn-requests.
 
 
 ## How it looks like
