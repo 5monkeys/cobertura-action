@@ -65,7 +65,7 @@ Pull request number associated with the report. This property should be used whe
 ```yaml
 on:
   pull_request:
-    types: [opened]
+    types: [opened, synchronize, reopened]
     branches:
       - master
 jobs:
