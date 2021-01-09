@@ -39,6 +39,36 @@ test("action", async () => {
   await action();
 });
 
+test("action triggered by workflow event", async () => {
+  const { action } = require("./action");
+  process.env["INPUT_PATH"] = "./src/fixtures/test-branch.xml";
+  process.env["INPUT_SKIP_COVERED"] = "true";
+  process.env["INPUT_SHOW_BRANCH"] = "false";
+  process.env["INPUT_SHOW_LINE"] = "false";
+  process.env["INPUT_MINIMUM_COVERAGE"] = "100";
+  process.env["INPUT_SHOW_CLASS_NAMES"] = "false";
+  process.env["INPUT_ONLY_CHANGED_FILES"] = "false";
+  process.env["INPUT_PULL_REQUEST_NUMBER"] = "";
+  const prNumber = 1;
+  nock("https://api.github.com")
+    .post(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
+    .reply(200)
+    .get(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
+    .reply(200, [{ body: "some body", id: 123 }])
+    .get(`/repos/${owner}/${repo}/pulls?state=open`)
+    .reply(200, [
+      {
+        number: 1,
+        head: {
+          sha: "deadbeef"
+        }
+      }
+    ]);
+  await action({
+    workflow_run: { head_commit: { id: "deadbeef" } }
+  });
+});
+
 test("action passing pull request number directly", async () => {
   const { action } = require("./action");
   const prNumber = 123;
