@@ -81,3 +81,10 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           minimum_coverage: 75
 ```
+
+## Development
+
+- Install deps: `npm ci`
+- Run tests: `npm run test`
+- Run lint: `npm run lint`
+- Package application `npm run package`. Remember to run this before committing anything.
