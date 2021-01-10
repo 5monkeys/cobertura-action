@@ -5655,7 +5655,7 @@ module.exports = require("timers");
 /***/ 215:
 /***/ (function(module) {
 
-module.exports = {"name":"@octokit/rest","version":"16.43.2","publishConfig":{"access":"public"},"description":"GitHub REST API client for Node.js","keywords":["octokit","github","rest","api-client"],"author":"Gregor Martynus (https://github.com/gr2m)","contributors":[{"name":"Mike de Boer","email":"info@mikedeboer.nl"},{"name":"Fabian Jakobs","email":"fabian@c9.io"},{"name":"Joe Gallo","email":"joe@brassafrax.com"},{"name":"Gregor Martynus","url":"https://github.com/gr2m"}],"repository":"https://github.com/octokit/rest.js","dependencies":{"@octokit/auth-token":"^2.4.0","@octokit/plugin-paginate-rest":"^1.1.1","@octokit/plugin-request-log":"^1.0.0","@octokit/plugin-rest-endpoint-methods":"2.4.0","@octokit/request":"^5.2.0","@octokit/request-error":"^1.0.2","atob-lite":"^2.0.0","before-after-hook":"^2.0.0","btoa-lite":"^1.0.0","deprecation":"^2.0.0","lodash.get":"^4.4.2","lodash.set":"^4.3.2","lodash.uniq":"^4.5.0","octokit-pagination-methods":"^1.1.0","once":"^1.4.0","universal-user-agent":"^4.0.0"},"devDependencies":{"@gimenete/type-writer":"^0.1.3","@octokit/auth":"^1.1.1","@octokit/fixtures-server":"^5.0.6","@octokit/graphql":"^4.2.0","@types/node":"^13.1.0","bundlesize":"^0.18.0","chai":"^4.1.2","compression-webpack-plugin":"^3.1.0","cypress":"^4.0.0","glob":"^7.1.2","http-proxy-agent":"^4.0.0","lodash.camelcase":"^4.3.0","lodash.merge":"^4.6.1","lodash.upperfirst":"^4.3.1","lolex":"^6.0.0","mkdirp":"^1.0.0","mocha":"^7.0.1","mustache":"^4.0.0","nock":"^11.3.3","npm-run-all":"^4.1.2","nyc":"^15.0.0","prettier":"^1.14.2","proxy":"^1.0.0","semantic-release":"^17.0.0","sinon":"^8.0.0","sinon-chai":"^3.0.0","sort-keys":"^4.0.0","string-to-arraybuffer":"^1.0.0","string-to-jsdoc-comment":"^1.0.0","typescript":"^3.3.1","webpack":"^4.0.0","webpack-bundle-analyzer":"^3.0.0","webpack-cli":"^3.0.0"},"types":"index.d.ts","scripts":{"coverage":"nyc report --reporter=html && open coverage/index.html","lint":"prettier --check '{lib,plugins,scripts,test}/**/*.{js,json,ts}' 'docs/*.{js,json}' 'docs/src/**/*' index.js README.md package.json","lint:fix":"prettier --write '{lib,plugins,scripts,test}/**/*.{js,json,ts}' 'docs/*.{js,json}' 'docs/src/**/*' index.js README.md package.json","pretest":"npm run -s lint","test":"nyc mocha test/mocha-node-setup.js \"test/*/**/*-test.js\"","test:browser":"cypress run --browser chrome","build":"npm-run-all build:*","build:ts":"npm run -s update-endpoints:typescript","prebuild:browser":"mkdirp dist/","build:browser":"npm-run-all build:browser:*","build:browser:development":"webpack --mode development --entry . --output-library=Octokit --output=./dist/octokit-rest.js --profile --json > dist/bundle-stats.json","build:browser:production":"webpack --mode production --entry . --plugin=compression-webpack-plugin --output-library=Octokit --output-path=./dist --output-filename=octokit-rest.min.js --devtool source-map","generate-bundle-report":"webpack-bundle-analyzer dist/bundle-stats.json --mode=static --no-open --report dist/bundle-report.html","update-endpoints":"npm-run-all update-endpoints:*","update-endpoints:fetch-json":"node scripts/update-endpoints/fetch-json","update-endpoints:typescript":"node scripts/update-endpoints/typescript","prevalidate:ts":"npm run -s build:ts","validate:ts":"tsc --target es6 --noImplicitAny index.d.ts","postvalidate:ts":"tsc --noEmit --target es6 test/typescript-validate.ts","start-fixtures-server":"octokit-fixtures-server"},"license":"MIT","files":["index.js","index.d.ts","lib","plugins"],"nyc":{"ignore":["test"]},"release":{"publish":["@semantic-release/npm",{"path":"@semantic-release/github","assets":["dist/*","!dist/*.map.gz"]}]},"bundlesize":[{"path":"./dist/octokit-rest.min.js.gz","maxSize":"33 kB"}]};
+module.exports = {"name":"@octokit/rest","version":"16.43.2","publishConfig":{"access":"public"},"description":"GitHub REST API client for Node.js","keywords":["octokit","github","rest","api-client"],"author":"Gregor Martynus (https://github.com/gr2m)","contributors":[{"name":"Mike de Boer","email":"info@mikedeboer.nl"},{"name":"Fabian Jakobs","email":"fabian@c9.io"},{"name":"Joe Gallo","email":"joe@brassafrax.com"},{"name":"Gregor Martynus","url":"https://github.com/gr2m"}],"repository":"https://github.com/octokit/rest.js","dependencies":{"@octokit/auth-token":"^2.4.0","@octokit/plugin-paginate-rest":"^1.1.1","@octokit/plugin-request-log":"^1.0.0","@octokit/plugin-rest-endpoint-methods":"2.4.0","@octokit/request":"^5.2.0","@octokit/request-error":"^1.0.2","atob-lite":"^2.0.0","before-after-hook":"^2.0.0","btoa-lite":"^1.0.0","deprecation":"^2.0.0","lodash.get":"^4.4.2","lodash.set":"^4.3.2","lodash.uniq":"^4.5.0","octokit-pagination-methods":"^1.1.0","once":"^1.4.0","universal-user-agent":"^4.0.0"},"devDependencies":{"@gimenete/type-writer":"^0.1.3","@octokit/auth":"^1.1.1","@octokit/fixtures-server":"^5.0.6","@octokit/graphql":"^4.2.0","@types/node":"^13.1.0","bundlesize":"^0.18.0","chai":"^4.1.2","compression-webpack-plugin":"^3.1.0","cypress":"^4.0.0","glob":"^7.1.2","http-proxy-agent":"^4.0.0","lodash.camelcase":"^4.3.0","lodash.merge":"^4.6.1","lodash.upperfirst":"^4.3.1","lolex":"^6.0.0","mkdirp":"^1.0.0","mocha":"^7.0.1","mustache":"^4.0.0","nock":"^11.3.3","npm-run-all":"^4.1.2","nyc":"^15.0.0","prettier":"^1.14.2","proxy":"^1.0.0","semantic-release":"^17.0.0","sinon":"^8.0.0","sinon-chai":"^3.0.0","sort-keys":"^4.0.0","string-to-arraybuffer":"^1.0.0","string-to-jsdoc-comment":"^1.0.0","typescript":"^3.3.1","webpack":"^4.0.0","webpack-bundle-analyzer":"^3.0.0","webpack-cli":"^3.0.0"},"types":"index.d.ts","scripts":{"coverage":"nyc report --reporter=html && open coverage/index.html","lint":"prettier --check '{lib,plugins,scripts,test}/**/*.{js,json,ts}' 'docs/*.{js,json}' 'docs/src/**/*' index.js README.md package.json","lint:fix":"prettier --write '{lib,plugins,scripts,test}/**/*.{js,json,ts}' 'docs/*.{js,json}' 'docs/src/**/*' index.js README.md package.json","pretest":"npm run -s lint","test":"nyc mocha test/mocha-node-setup.js \"test/*/**/*-test.js\"","test:browser":"cypress run --browser chrome","build":"npm-run-all build:*","build:ts":"npm run -s update-endpoints:typescript","prebuild:browser":"mkdirp dist/","build:browser":"npm-run-all build:browser:*","build:browser:development":"webpack --mode development --entry . --output-library=Octokit --output=./dist/octokit-rest.js --profile --json > dist/bundle-stats.json","build:browser:production":"webpack --mode production --entry . --plugin=compression-webpack-plugin --output-library=Octokit --output-path=./dist --output-filename=octokit-rest.min.js --devtool source-map","generate-bundle-report":"webpack-bundle-analyzer dist/bundle-stats.json --mode=static --no-open --report dist/bundle-report.html","update-endpoints":"npm-run-all update-endpoints:*","update-endpoints:fetch-json":"node scripts/update-endpoints/fetch-json","update-endpoints:typescript":"node scripts/update-endpoints/typescript","prevalidate:ts":"npm run -s build:ts","validate:ts":"tsc --target es6 --noImplicitAny index.d.ts","postvalidate:ts":"tsc --noEmit --target es6 test/typescript-validate.ts","start-fixtures-server":"octokit-fixtures-server"},"license":"MIT","files":["index.js","index.d.ts","lib","plugins"],"nyc":{"ignore":["test"]},"release":{"publish":["@semantic-release/npm",{"path":"@semantic-release/github","assets":["dist/*","!dist/*.map.gz"]}]},"bundlesize":[{"path":"./dist/octokit-rest.min.js.gz","maxSize":"33 kB"}],"_resolved":"https://registry.npmjs.org/@octokit/rest/-/rest-16.43.2.tgz","_integrity":"sha512-ngDBevLbBTFfrHZeiS7SAMAZ6ssuVmXuya+F/7RaVvlysgGa1JKJkKWY+jV6TCJYcW0OALfJ7nTIGXcBXzycfQ==","_from":"@octokit/rest@16.43.2"};
 
 /***/ }),
 
@@ -18378,7 +18378,8 @@ async function processCoverage(path, options) {
       return {
         ...calculateRates(klass),
         filename: klass["filename"],
-        name: klass["name"]
+        name: klass["name"],
+        missing: missingLines(klass)
       };
     })
     .filter(file => options.skipCovered === false || file.total < 100);
@@ -18419,6 +18420,72 @@ function calculateRates(element) {
     line,
     branch
   };
+}
+
+function getLines(klass) {
+  if (klass.lines && klass.lines.line instanceof Array) {
+    return klass.lines.line;
+  } else if (klass.lines && klass.lines.line) {
+    return [klass.lines.line];
+  } else {
+    return [];
+  }
+}
+
+function missingLines(klass) {
+  // Bail if line-rate says fully covered
+  if (parseFloat(klass["line-rate"]) >= 1.0) return "";
+
+  const lines = getLines(klass).sort(
+    (a, b) => parseInt(a.number) - parseInt(b.number)
+  );
+  const statements = lines.map(line => line.number);
+  const misses = lines
+    .filter(line => parseInt(line.hits) < 1)
+    .map(line => line.number);
+  return formatLines(statements, misses);
+}
+
+function formatLines(statements, lines) {
+  /*
+   * Detect sequences, with gaps according to 'statements',
+   * in 'lines' and compress them in to a range format.
+   *
+   * Example:
+   *
+   * statements = [1,2,3,4,5,10,11,12,13,14]
+   * lines =      [1,2,    5,10,11,   13,14]
+   * Returns: "1-2, 5-11, 13-14"
+   */
+  const ranges = [];
+  let start = null;
+  let linesCursor = 0;
+  for (const statement of statements) {
+    if (linesCursor >= lines.length) break;
+
+    if (statement === lines[linesCursor]) {
+      // (Consecutive) element from 'statements' matches
+      // element from 'lines' at 'linesCursor'
+      linesCursor += 1;
+      if (start === null) start = statement;
+      end = statement;
+    } else if (start !== null) {
+      // Consecutive elements are broken, an element from
+      // 'statements' is missing from 'lines'
+      ranges.push([start, end]);
+      start = null;
+    }
+  }
+  // (Eventually) close range running last iteration
+  if (start !== null) ranges.push([start, end]);
+
+  // Convert ranges to a comma separated string
+  return ranges
+    .map(range => {
+      const [start, end] = range;
+      return start === end ? start : start + "-" + end;
+    })
+    .join(", ");
 }
 
 module.exports = {
@@ -34838,6 +34905,15 @@ async function action(payload) {
   const showClassNames = JSON.parse(
     core.getInput("show_class_names", { required: true })
   );
+  const showMissing = JSON.parse(
+    core.getInput("show_missing", { required: true })
+  );
+  let showMissingMaxLength = core.getInput("show_missing_max_length", {
+    required: false
+  });
+  showMissingMaxLength = showMissingMaxLength
+    ? parseInt(showMissingMaxLength)
+    : -1;
   const onlyChangedFiles = JSON.parse(
     core.getInput("only_changed_files", { required: true })
   );
@@ -34853,6 +34929,8 @@ async function action(payload) {
     showLine,
     showBranch,
     showClassNames,
+    showMissing,
+    showMissingMaxLength,
     filteredFiles: changedFiles,
     reportName
   });
@@ -34865,11 +34943,15 @@ function markdownReport(report, commit, options) {
     showLine = false,
     showBranch = false,
     showClassNames = false,
+    showMissing = false,
+    showMissingMaxLength = -1,
     filteredFiles = null,
     reportName = "Coverage Report"
   } = options || {};
   const status = total =>
     total >= minimumCoverage ? ":white_check_mark:" : ":x:";
+  const crop = (str, at) =>
+    str.length > at ? str.slice(0, at).concat("...") : str;
   // Setup files
   const files = [];
   for (const file of report.files.filter(
@@ -34878,12 +34960,17 @@ function markdownReport(report, commit, options) {
     const fileTotal = Math.round(file.total);
     const fileLines = Math.round(file.line);
     const fileBranch = Math.round(file.branch);
+    const fileMissing =
+      showMissingMaxLength > 0
+        ? crop(file.missing, showMissingMaxLength)
+        : file.missing;
     files.push([
       showClassNames ? file.name : file.filename,
       `\`${fileTotal}%\``,
       showLine ? `\`${fileLines}%\`` : undefined,
       showBranch ? `\`${fileBranch}%\`` : undefined,
-      status(fileTotal)
+      status(fileTotal),
+      showMissing ? `\`${fileMissing}\`` : undefined
     ]);
   }
   // Construct table
@@ -34906,21 +34993,24 @@ function markdownReport(report, commit, options) {
       "Coverage",
       showLine ? "Lines" : undefined,
       showBranch ? "Branches" : undefined,
-      " "
+      " ",
+      showMissing ? "Missing" : undefined
     ],
     [
       "-",
       ":-:",
       showLine ? ":-:" : undefined,
       showBranch ? ":-:" : undefined,
-      ":-:"
+      ":-:",
+      showMissing ? ":-:" : undefined
     ],
     [
       "**All files**",
       `\`${total}%\``,
       showLine ? `\`${linesTotal}%\`` : undefined,
       showBranch ? `\`${branchTotal}%\`` : undefined,
-      status(total)
+      status(total),
+      showMissing ? " " : undefined
     ],
     ...files
   ]

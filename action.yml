@@ -27,6 +27,14 @@ inputs:
     description: 'Show class names instead of file names.'
     required: true
     default: false
+  show_missing:
+    description: 'Show line numbers of statements, per module, that was not executed.'
+    required: true
+    default: false
+  show_missing_max_length:
+    description: 'Crop missing line numbers strings that exceeds this length, provided as an integer.'
+    required: false
+    default: ''
   only_changed_files:
     description: 'Only show coverage for changed files.'
     required: true

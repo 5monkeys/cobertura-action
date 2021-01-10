@@ -25,7 +25,8 @@ async function processCoverage(path, options) {
       return {
         ...calculateRates(klass),
         filename: klass["filename"],
-        name: klass["name"]
+        name: klass["name"],
+        missing: missingLines(klass)
       };
     })
     .filter(file => options.skipCovered === false || file.total < 100);
@@ -66,6 +67,72 @@ function calculateRates(element) {
     line,
     branch
   };
+}
+
+function getLines(klass) {
+  if (klass.lines && klass.lines.line instanceof Array) {
+    return klass.lines.line;
+  } else if (klass.lines && klass.lines.line) {
+    return [klass.lines.line];
+  } else {
+    return [];
+  }
+}
+
+function missingLines(klass) {
+  // Bail if line-rate says fully covered
+  if (parseFloat(klass["line-rate"]) >= 1.0) return "";
+
+  const lines = getLines(klass).sort(
+    (a, b) => parseInt(a.number) - parseInt(b.number)
+  );
+  const statements = lines.map(line => line.number);
+  const misses = lines
+    .filter(line => parseInt(line.hits) < 1)
+    .map(line => line.number);
+  return formatLines(statements, misses);
+}
+
+function formatLines(statements, lines) {
+  /*
+   * Detect sequences, with gaps according to 'statements',
+   * in 'lines' and compress them in to a range format.
+   *
+   * Example:
+   *
+   * statements = [1,2,3,4,5,10,11,12,13,14]
+   * lines =      [1,2,    5,10,11,   13,14]
+   * Returns: "1-2, 5-11, 13-14"
+   */
+  const ranges = [];
+  let start = null;
+  let linesCursor = 0;
+  for (const statement of statements) {
+    if (linesCursor >= lines.length) break;
+
+    if (statement === lines[linesCursor]) {
+      // (Consecutive) element from 'statements' matches
+      // element from 'lines' at 'linesCursor'
+      linesCursor += 1;
+      if (start === null) start = statement;
+      end = statement;
+    } else if (start !== null) {
+      // Consecutive elements are broken, an element from
+      // 'statements' is missing from 'lines'
+      ranges.push([start, end]);
+      start = null;
+    }
+  }
+  // (Eventually) close range running last iteration
+  if (start !== null) ranges.push([start, end]);
+
+  // Convert ranges to a comma separated string
+  return ranges
+    .map(range => {
+      const [start, end] = range;
+      return start === end ? start : start + "-" + end;
+    })
+    .join(", ");
 }
 
 module.exports = {
