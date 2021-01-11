@@ -9,7 +9,7 @@ const dummyReport = {
   files: [
     {
       name: "ClassFoo",
-      filename: "foo.py",
+      filename: "__init__.py",
       total: 80,
       line: 80,
       branch: 0,
@@ -209,7 +209,7 @@ test("markdownReport", () => {
 | File | Coverage |   |
 | - | :-: | :-: |
 | **All files** | \`78%\` | :white_check_mark: |
-| foo.py | \`80%\` | :white_check_mark: |
+| \\_\\_init\\_\\_.py | \`80%\` | :white_check_mark: |
 | bar.py | \`75%\` | :white_check_mark: |
 
 _Minimum allowed coverage is \`70%\`_
@@ -222,7 +222,7 @@ _Minimum allowed coverage is \`70%\`_
 | File | Coverage |   |
 | - | :-: | :-: |
 | **All files** | \`78%\` | :x: |
-| foo.py | \`80%\` | :x: |
+| \\_\\_init\\_\\_.py | \`80%\` | :x: |
 | bar.py | \`75%\` | :x: |
 
 _Minimum allowed coverage is \`100%\`_
@@ -236,7 +236,7 @@ _Minimum allowed coverage is \`100%\`_
 | File | Coverage | Lines |   |
 | - | :-: | :-: | :-: |
 | **All files** | \`78%\` | \`78%\` | :white_check_mark: |
-| foo.py | \`80%\` | \`80%\` | :white_check_mark: |
+| \\_\\_init\\_\\_.py | \`80%\` | \`80%\` | :white_check_mark: |
 | bar.py | \`75%\` | \`80%\` | :white_check_mark: |
 
 _Minimum allowed coverage is \`70%\`_
@@ -253,7 +253,7 @@ _Minimum allowed coverage is \`70%\`_
 | File | Coverage | Branches |   |
 | - | :-: | :-: | :-: |
 | **All files** | \`78%\` | \`0%\` | :white_check_mark: |
-| foo.py | \`80%\` | \`0%\` | :white_check_mark: |
+| \\_\\_init\\_\\_.py | \`80%\` | \`0%\` | :white_check_mark: |
 | bar.py | \`75%\` | \`0%\` | :white_check_mark: |
 
 _Minimum allowed coverage is \`70%\`_
@@ -271,7 +271,7 @@ _Minimum allowed coverage is \`70%\`_
 | File | Coverage | Lines | Branches |   |
 | - | :-: | :-: | :-: | :-: |
 | **All files** | \`78%\` | \`78%\` | \`0%\` | :white_check_mark: |
-| foo.py | \`80%\` | \`80%\` | \`0%\` | :white_check_mark: |
+| \\_\\_init\\_\\_.py | \`80%\` | \`80%\` | \`0%\` | :white_check_mark: |
 | bar.py | \`75%\` | \`80%\` | \`0%\` | :white_check_mark: |
 
 _Minimum allowed coverage is \`70%\`_
@@ -290,7 +290,7 @@ _Minimum allowed coverage is \`70%\`_
 | File | Coverage | Lines | Branches |   | Missing |
 | - | :-: | :-: | :-: | :-: | :-: |
 | **All files** | \`78%\` | \`78%\` | \`0%\` | :white_check_mark: |   |
-| foo.py | \`80%\` | \`80%\` | \`0%\` | :white_check_mark: | \`24-26\` |
+| \\_\\_init\\_\\_.py | \`80%\` | \`80%\` | \`0%\` | :white_check_mark: | \`24-26\` |
 | bar.py | \`75%\` | \`80%\` | \`0%\` | :white_check_mark: | \`23-24, 39-40\` |
 
 _Minimum allowed coverage is \`70%\`_
@@ -310,7 +310,7 @@ _Minimum allowed coverage is \`70%\`_
 | File | Coverage | Lines | Branches |   | Missing |
 | - | :-: | :-: | :-: | :-: | :-: |
 | **All files** | \`78%\` | \`78%\` | \`0%\` | :white_check_mark: |   |
-| foo.py | \`80%\` | \`80%\` | \`0%\` | :white_check_mark: | \`24-26\` |
+| \\_\\_init\\_\\_.py | \`80%\` | \`80%\` | \`0%\` | :white_check_mark: | \`24-26\` |
 | bar.py | \`75%\` | \`80%\` | \`0%\` | :white_check_mark: | \`23-24...\` |
 
 _Minimum allowed coverage is \`70%\`_
@@ -323,7 +323,7 @@ _Minimum allowed coverage is \`70%\`_
 | File | Coverage |   |
 | - | :-: | :-: |
 | **All files** | \`78%\` | :x: |
-| foo.py | \`80%\` | :white_check_mark: |
+| \\_\\_init\\_\\_.py | \`80%\` | :white_check_mark: |
 | bar.py | \`75%\` | :x: |
 
 _Minimum allowed coverage is \`80%\`_

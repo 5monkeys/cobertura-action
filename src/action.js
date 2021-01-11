@@ -1,5 +1,6 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
+const { escapeMarkdown } = require("./utils");
 const { processCoverage } = require("./cobertura");
 
 const client = new github.GitHub(
@@ -88,7 +89,7 @@ function markdownReport(report, commit, options) {
         ? crop(file.missing, showMissingMaxLength)
         : file.missing;
     files.push([
-      showClassNames ? file.name : file.filename,
+      escapeMarkdown(showClassNames ? file.name : file.filename),
       `\`${fileTotal}%\``,
       showLine ? `\`${fileLines}%\`` : undefined,
       showBranch ? `\`${fileBranch}%\`` : undefined,
