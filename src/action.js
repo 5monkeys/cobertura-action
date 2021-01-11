@@ -94,7 +94,7 @@ function markdownReport(report, commit, options) {
       showLine ? `\`${fileLines}%\`` : undefined,
       showBranch ? `\`${fileBranch}%\`` : undefined,
       status(fileTotal),
-      showMissing ? `\`${fileMissing}\`` : undefined
+      showMissing ? (fileMissing ? `\`${fileMissing}\`` : " ") : undefined
     ]);
   }
   // Construct table
