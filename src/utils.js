@@ -3,5 +3,5 @@ function escapeMarkdown(string) {
 }
 
 module.exports = {
-  escapeMarkdown
+  escapeMarkdown,
 };
