@@ -13,7 +13,7 @@ const dummyReport = {
       total: 80,
       line: 80,
       branch: 0,
-      missing: "24-26"
+      missing: "24-26",
     },
     {
       name: "ClassBar",
@@ -21,7 +21,7 @@ const dummyReport = {
       total: 75,
       line: 80,
       branch: 0,
-      missing: "23-24, 39-40"
+      missing: "23-24, 39-40",
     },
     {
       name: "ClassMoo",
@@ -29,9 +29,9 @@ const dummyReport = {
       total: 75,
       line: 100,
       branch: 75,
-      missing: ""
-    }
-  ]
+      missing: "",
+    },
+  ],
 };
 
 beforeEach(() => {
@@ -57,7 +57,7 @@ test("action", async () => {
     .get(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
     .reply(200, [{ body: "some body", id: 123 }]);
   await action({
-    pull_request: { number: prNumber, head: { sha: "deadbeef" } }
+    pull_request: { number: prNumber, head: { sha: "deadbeef" } },
   });
   await action();
 });
@@ -83,12 +83,12 @@ test("action triggered by workflow event", async () => {
       {
         number: 1,
         head: {
-          sha: "deadbeef"
-        }
-      }
+          sha: "deadbeef",
+        },
+      },
     ]);
   await action({
-    workflow_run: { head_commit: { id: "deadbeef" } }
+    workflow_run: { head_commit: { id: "deadbeef" } },
   });
 });
 
@@ -112,11 +112,11 @@ test("action passing pull request number directly", async () => {
     .get(`/repos/${owner}/${repo}/pulls/${prNumber}`)
     .reply(200, {
       head: {
-        sha: "deadbeef"
-      }
+        sha: "deadbeef",
+      },
     });
   await action({
-    push: { ref: "master" }
+    push: { ref: "master" },
   });
 });
 
@@ -140,11 +140,11 @@ test("action only changes", async () => {
     .get(`/repos/${owner}/${repo}/pulls/${prNumber}/files`)
     .reply(200, [
       {
-        filename: "file1.txt"
-      }
+        filename: "file1.txt",
+      },
     ]);
   await action({
-    pull_request: { number: prNumber, head: { sha: "deadbeef" } }
+    pull_request: { number: prNumber, head: { sha: "deadbeef" } },
   });
   await action();
 });
@@ -169,11 +169,11 @@ test("action with report name", async () => {
     .get(`/repos/${owner}/${repo}/pulls/${prNumber}/files`)
     .reply(200, [
       {
-        filename: "file1.txt"
-      }
+        filename: "file1.txt",
+      },
     ]);
   await action({
-    pull_request: { number: prNumber, head: { sha: "deadbeef" } }
+    pull_request: { number: prNumber, head: { sha: "deadbeef" } },
   });
   await action();
 });
@@ -197,7 +197,7 @@ test("action with crop missing lines", async () => {
     .get(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
     .reply(200, [{ body: "some body", id: 123 }]);
   await action({
-    pull_request: { number: prNumber, head: { sha: "deadbeef" } }
+    pull_request: { number: prNumber, head: { sha: "deadbeef" } },
   });
   await action();
 });
@@ -210,7 +210,7 @@ test("markdownReport", () => {
   expect(
     markdownReport(dummyReport, commit, {
       minimumCoverage: 70,
-      reportName: reportName
+      reportName: reportName,
     })
   ).toBe(`<strong>${reportName}</strong>
 
@@ -257,7 +257,7 @@ _Minimum allowed coverage is \`70%\`_
   expect(
     markdownReport(dummyReport, commit, {
       minimumCoverage: 70,
-      showBranch: true
+      showBranch: true,
     })
   ).toBe(`<strong>${defaultReportName}</strong>
 
@@ -276,7 +276,7 @@ _Minimum allowed coverage is \`70%\`_
     markdownReport(dummyReport, commit, {
       minimumCoverage: 70,
       showLine: true,
-      showBranch: true
+      showBranch: true,
     })
   ).toBe(`<strong>${defaultReportName}</strong>
 
@@ -296,7 +296,7 @@ _Minimum allowed coverage is \`70%\`_
       minimumCoverage: 70,
       showLine: true,
       showBranch: true,
-      showMissing: true
+      showMissing: true,
     })
   ).toBe(`<strong>${defaultReportName}</strong>
 
@@ -317,7 +317,7 @@ _Minimum allowed coverage is \`70%\`_
       showLine: true,
       showBranch: true,
       showMissing: true,
-      showMissingMaxLength: 5
+      showMissingMaxLength: 5,
     })
   ).toBe(`<strong>${defaultReportName}</strong>
 
@@ -479,7 +479,7 @@ _Minimum allowed coverage is \`100%\`_
     .get(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
     .reply(200, [
       { body: report1Comment, id: comment1Id },
-      { body: report2Comment, id: comment2Id }
+      { body: report2Comment, id: comment2Id },
     ])
     .patch(`/repos/${owner}/${repo}/issues/comments/${comment2Id}`)
     .reply(200, [{ body: report2Comment, id: comment2Id }]);
@@ -493,8 +493,8 @@ test("listChangedFiles", async () => {
     .get(`/repos/${owner}/${repo}/pulls/${prNumber}/files`)
     .reply(200, [
       {
-        filename: "file1.txt"
-      }
+        filename: "file1.txt",
+      },
     ]);
   await listChangedFiles(prNumber);
 });

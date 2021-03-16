@@ -29,18 +29,18 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.5",
-    "@actions/github": "^2.2.0",
-    "glob-promise": "^3.4.0",
+    "@actions/core": "^1.2.6",
+    "@actions/github": "^4.0.0",
+    "glob-promise": "^4.0.1",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "@zeit/ncc": "^0.22.3",
-    "eslint": "^6.8.0",
+    "eslint": "^7.19.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
-    "jest": "^24.9.0",
-    "nock": "^11.9.1",
-    "prettier": "^1.19.1"
+    "jest": "^26.6.3",
+    "nock": "^13.0.7",
+    "prettier": "^2.2.1"
   }
 }
