@@ -4,14 +4,14 @@ const util = require("util");
 const glob = require("glob-promise");
 const parseString = util.promisify(xml2js.parseString);
 
-async function processCoverage(path, options) {
-  options = options || { skipCovered: false };
-
-  if (glob.hasMagic(path)) {
-    const paths = await glob(path);
-    path = paths[0];
-  }
-
+/**
+ * generate the report for the given file
+ *
+ * @param path: string
+ * @param options: object
+ * @return {Promise<{total: number, line: number, files: T[], branch: number}>}
+ */
+async function readCoverageFromFile(path, options) {
   const xml = await fs.readFile(path, "utf-8");
   const { coverage } = await parseString(xml, {
     explicitArray: false,
@@ -36,6 +36,40 @@ async function processCoverage(path, options) {
   };
 }
 
+function trimFolder(path, positionOfFirstDiff) {
+  const lastFolder = path.lastIndexOf("/") + 1;
+  if (positionOfFirstDiff >= lastFolder) {
+    return path.substr(lastFolder);
+  } else {
+    const startOffset = Math.min(positionOfFirstDiff - 1, lastFolder);
+    const length = path.length - startOffset - lastFolder - 2; // remove filename
+    return path.substr(startOffset, length);
+  }
+}
+
+/**
+ *
+ * @param path: string
+ * @param options: {}
+ * @returns {Promise<{total: number, folder: string, line: number, files: T[], branch: number}[]>}
+ */
+async function processCoverage(path, options) {
+  options = options || { skipCovered: false };
+
+  const paths = glob.hasMagic(path) ? await glob(path) : [path];
+  const positionOfFirstDiff = longestCommonPrefix(paths);
+  return await Promise.all(
+    paths.map(async (path) => {
+      const report = await readCoverageFromFile(path, options);
+      const folder = trimFolder(path, positionOfFirstDiff);
+      return {
+        ...report,
+        folder,
+      };
+    })
+  );
+}
+
 function processPackages(packages) {
   if (packages.package instanceof Array) {
     return packages.package.map((p) => processPackage(p)).flat();
@@ -58,6 +92,12 @@ function processPackage(packageObj) {
   }
 }
 
+/**
+ * returns coverage rates
+ *
+ * @param element: object
+ * @returns {{total: number, line: number, branch: number}}
+ */
 function calculateRates(element) {
   const line = parseFloat(element["line-rate"]) * 100;
   const branch = parseFloat(element["branch-rate"]) * 100;
@@ -107,7 +147,7 @@ function formatLines(statements, lines) {
   const ranges = [];
   let start = null;
   let linesCursor = 0;
-  let end = null;
+  let end;
   for (const statement of statements) {
     if (linesCursor >= lines.length) break;
 
@@ -136,6 +176,30 @@ function formatLines(statements, lines) {
     .join(", ");
 }
 
+/**
+ *
+ * @param paths: [string]
+ * @returns number
+ */
+function longestCommonPrefix(paths) {
+  let prefix = "";
+  if (paths === null || paths.length === 0) return 0;
+
+  for (let i = 0; i < paths[0].length; i++) {
+    const char = paths[0][i]; // loop through all characters of the very first string.
+
+    for (let j = 1; j < paths.length; j++) {
+      // loop through all other strings in the array
+      if (paths[j][i] !== char) return prefix.length;
+    }
+    prefix = prefix + char;
+  }
+
+  return prefix.length;
+}
+
 module.exports = {
   processCoverage,
+  trimFolder,
+  longestCommonPrefix,
 };

@@ -47,8 +47,8 @@ async function action(payload) {
     ? await listChangedFiles(pullRequestNumber)
     : null;
 
-  const report = await processCoverage(path, { skipCovered });
-  const comment = markdownReport(report, commit, {
+  const reports = await processCoverage(path, { skipCovered });
+  const comment = markdownReport(reports, commit, {
     minimumCoverage,
     showLine,
     showBranch,
@@ -61,7 +61,7 @@ async function action(payload) {
   await addComment(pullRequestNumber, comment, reportName);
 }
 
-function markdownReport(report, commit, options) {
+function markdownReport(reports, commit, options) {
   const {
     minimumCoverage = 100,
     showLine = false,
@@ -78,74 +78,81 @@ function markdownReport(report, commit, options) {
     str.length > at ? str.slice(0, at).concat("...") : str;
   // Setup files
   const files = [];
-  for (const file of report.files.filter(
-    (file) => filteredFiles == null || filteredFiles.includes(file.filename)
-  )) {
-    const fileTotal = Math.round(file.total);
-    const fileLines = Math.round(file.line);
-    const fileBranch = Math.round(file.branch);
-    const fileMissing =
-      showMissingMaxLength > 0
-        ? crop(file.missing, showMissingMaxLength)
-        : file.missing;
-    files.push([
-      escapeMarkdown(showClassNames ? file.name : file.filename),
-      `\`${fileTotal}%\``,
-      showLine ? `\`${fileLines}%\`` : undefined,
-      showBranch ? `\`${fileBranch}%\`` : undefined,
-      status(fileTotal),
-      showMissing ? (fileMissing ? `\`${fileMissing}\`` : " ") : undefined,
-    ]);
+  let output = "";
+  for (const report of reports) {
+    const folder = reports.length <= 1 ? "" : ` ${report.folder}`;
+    for (const file of report.files.filter(
+      (file) => filteredFiles == null || filteredFiles.includes(file.filename)
+    )) {
+      const fileTotal = Math.round(file.total);
+      const fileLines = Math.round(file.line);
+      const fileBranch = Math.round(file.branch);
+      const fileMissing =
+        showMissingMaxLength > 0
+          ? crop(file.missing, showMissingMaxLength)
+          : file.missing;
+      files.push([
+        escapeMarkdown(showClassNames ? file.name : file.filename),
+        `\`${fileTotal}%\``,
+        showLine ? `\`${fileLines}%\`` : undefined,
+        showBranch ? `\`${fileBranch}%\`` : undefined,
+        status(fileTotal),
+        showMissing ? (fileMissing ? `\`${fileMissing}\`` : " ") : undefined,
+      ]);
+    }
+
+    // Construct table
+    /*
+    | File          | Coverage |                    |
+    |---------------|:--------:|:------------------:|
+    | **All files** | `78%`    | :x:                |
+    | foo.py        | `80%`    | :white_check_mark: |
+    | bar.py        | `75%`    | :x:                |
+
+    _Minimum allowed coverage is `80%`_
+    */
+
+    const total = Math.round(report.total);
+    const linesTotal = Math.round(report.line);
+    const branchTotal = Math.round(report.branch);
+    const table = [
+      [
+        "File",
+        "Coverage",
+        showLine ? "Lines" : undefined,
+        showBranch ? "Branches" : undefined,
+        " ",
+        showMissing ? "Missing" : undefined,
+      ],
+      [
+        "-",
+        ":-:",
+        showLine ? ":-:" : undefined,
+        showBranch ? ":-:" : undefined,
+        ":-:",
+        showMissing ? ":-:" : undefined,
+      ],
+      [
+        "**All files**",
+        `\`${total}%\``,
+        showLine ? `\`${linesTotal}%\`` : undefined,
+        showBranch ? `\`${branchTotal}%\`` : undefined,
+        status(total),
+        showMissing ? " " : undefined,
+      ],
+      ...files,
+    ]
+      .map((row) => {
+        return `| ${row.filter(Boolean).join(" | ")} |`;
+      })
+      .join("\n");
+    const titleText = `<strong>${reportName}${folder}</strong>`;
+    output += `${titleText}\n\n${table}\n\n`;
   }
-  // Construct table
-  /*
-  | File          | Coverage |                    |
-  |---------------|:--------:|:------------------:|
-  | **All files** | `78%`    | :x:                |
-  | foo.py        | `80%`    | :white_check_mark: |
-  | bar.py        | `75%`    | :x:                |
-
-  _Minimum allowed coverage is `80%`_
-  */
-
-  const total = Math.round(report.total);
-  const linesTotal = Math.round(report.line);
-  const branchTotal = Math.round(report.branch);
-  const table = [
-    [
-      "File",
-      "Coverage",
-      showLine ? "Lines" : undefined,
-      showBranch ? "Branches" : undefined,
-      " ",
-      showMissing ? "Missing" : undefined,
-    ],
-    [
-      "-",
-      ":-:",
-      showLine ? ":-:" : undefined,
-      showBranch ? ":-:" : undefined,
-      ":-:",
-      showMissing ? ":-:" : undefined,
-    ],
-    [
-      "**All files**",
-      `\`${total}%\``,
-      showLine ? `\`${linesTotal}%\`` : undefined,
-      showBranch ? `\`${branchTotal}%\`` : undefined,
-      status(total),
-      showMissing ? " " : undefined,
-    ],
-    ...files,
-  ]
-    .map((row) => {
-      return `| ${row.filter(Boolean).join(" | ")} |`;
-    })
-    .join("\n");
   const minimumCoverageText = `_Minimum allowed coverage is \`${minimumCoverage}%\`_`;
   const footerText = `<p align="right">${credits} against ${commit} </p>`;
-  const titleText = `<strong>${reportName}</strong>`;
-  return `${titleText}\n\n${table}\n\n${minimumCoverageText}\n\n${footerText}`;
+  output += `${minimumCoverageText}\n\n${footerText}`;
+  return output;
 }
 
 async function addComment(pullRequestNumber, body, reportName) {
@@ -207,7 +214,7 @@ async function pullRequestInfo(payload = {}) {
       state: "open",
     });
     pullRequestNumber = data
-      .filter((d) => d.head.sha == commit)
+      .filter((d) => d.head.sha === commit)
       .reduce((n, d) => d.number, "");
   } else if (payload.pull_request) {
     // try to find the PR from payload

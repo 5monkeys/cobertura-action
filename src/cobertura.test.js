@@ -1,9 +1,21 @@
-const { processCoverage } = require("./cobertura");
+const {
+  processCoverage,
+  trimFolder,
+  longestCommonPrefix,
+} = require("./cobertura");
+
+test("multiple files", async () => {
+  const reports = await processCoverage("./src/fixtures/*-branch.xml");
+  expect(reports.length).toBe(2);
+  expect(reports[0].folder).toBe("test-branch.xml");
+  expect(reports[1].folder).toBe("test-no-branch.xml");
+});
 
 test("processCoverage(test-branch.xml, {skipCovered: false})", async () => {
-  const report = await processCoverage("./src/fixtures/test-branch.xml");
-  expect(report.total).toBe(82.5);
-  const files = report.files;
+  const reports = await processCoverage("./src/fixtures/test-branch.xml");
+  expect(reports.length).toBe(1);
+  expect(reports[0].total).toBe(82.5);
+  const files = reports[0].files;
   expect(files.length).toBe(4);
 
   expect(files[0].total).toBe(100);
@@ -32,11 +44,12 @@ test("processCoverage(test-branch.xml, {skipCovered: false})", async () => {
 });
 
 test("processCoverage({skipCovered: true})", async () => {
-  const report = await processCoverage("./src/fixtures/test-branch.xml", {
+  const reports = await processCoverage("./src/fixtures/test-branch.xml", {
     skipCovered: true,
   });
-  expect(report.total).toBe(82.5);
-  const files = report.files;
+  expect(reports.length).toBe(1);
+  expect(reports[0].total).toBe(82.5);
+  const files = reports[0].files;
   expect(files.length).toBe(2);
 
   expect(files[0].total).toBe(87.5);
@@ -53,11 +66,11 @@ test("processCoverage({skipCovered: true})", async () => {
 });
 
 test("processCoverage(test-branch.xml, {skipCovered: true})", async () => {
-  const report = await processCoverage("./src/fixtures/test-branch.xml", {
+  const reports = await processCoverage("./src/fixtures/test-branch.xml", {
     skipCovered: true,
   });
-  expect(report.total).toBe(82.5);
-  const files = report.files;
+  expect(reports[0].total).toBe(82.5);
+  const files = reports[0].files;
   expect(files.length).toBe(2);
 
   expect(files[0].total).toBe(87.5);
@@ -74,11 +87,11 @@ test("processCoverage(test-branch.xml, {skipCovered: true})", async () => {
 });
 
 test("processCoverage(test-no-branch.xml, {skipCovered: true})", async () => {
-  const report = await processCoverage("./src/fixtures/test-no-branch.xml", {
+  const reports = await processCoverage("./src/fixtures/test-no-branch.xml", {
     skipCovered: true,
   });
-  expect(report.total).toBe(90);
-  const files = report.files;
+  expect(reports[0].total).toBe(90);
+  const files = reports[0].files;
   expect(files.length).toBe(2);
 
   expect(files[0].total).toBe(91.66666666666666);
@@ -95,11 +108,11 @@ test("processCoverage(test-no-branch.xml, {skipCovered: true})", async () => {
 });
 
 test("processCoverage(test-istanbul.xml, {skipCovered: false})", async () => {
-  const report = await processCoverage("./src/fixtures/test-istanbul.xml", {
+  const reports = await processCoverage("./src/fixtures/test-istanbul.xml", {
     skipCovered: false,
   });
-  expect(report.total).toBe(100);
-  const files = report.files;
+  expect(reports[0].total).toBe(100);
+  const files = reports[0].files;
   expect(files.length).toBe(2);
 
   expect(files[0].total).toBe(100);
@@ -116,14 +129,14 @@ test("processCoverage(test-istanbul.xml, {skipCovered: false})", async () => {
 });
 
 test("processCoverage(test-istanbul-single.xml, {skipCovered: false})", async () => {
-  const report = await processCoverage(
+  const reports = await processCoverage(
     "./src/fixtures/test-istanbul-single.xml",
     {
       skipCovered: false,
     }
   );
-  expect(report.total).toBe(100);
-  const files = report.files;
+  expect(reports[0].total).toBe(100);
+  const files = reports[0].files;
   expect(files.length).toBe(1);
 
   expect(files[0].total).toBe(100);
@@ -134,11 +147,11 @@ test("processCoverage(test-istanbul-single.xml, {skipCovered: false})", async ()
 });
 
 test("processCoverage(test-python.xml, {skipCovered: false})", async () => {
-  const report = await processCoverage("./src/fixtures/test-python.xml", {
+  const reports = await processCoverage("./src/fixtures/test-python.xml", {
     skipCovered: false,
   });
-  expect(report.total).toBe(90);
-  const files = report.files;
+  expect(reports[0].total).toBe(90);
+  const files = reports[0].files;
   expect(files.length).toBe(1);
 
   expect(files[0].total).toBe(90);
@@ -149,9 +162,10 @@ test("processCoverage(test-python.xml, {skipCovered: false})", async () => {
 });
 
 test("processCoverage(glob-test-branch.xml, {skipCovered: false})", async () => {
-  const report = await processCoverage("./src/**/test-branch.xml");
-  expect(report.total).toBe(82.5);
-  const files = report.files;
+  const reports = await processCoverage("./src/**/test-branch.xml");
+  expect(reports.length).toBe(1);
+  expect(reports[0].total).toBe(82.5);
+  const files = reports[0].files;
   expect(files.length).toBe(4);
 
   expect(files[0].total).toBe(100);
@@ -180,9 +194,10 @@ test("processCoverage(glob-test-branch.xml, {skipCovered: false})", async () => 
 });
 
 test("processCoverage(test-missing-lines.xml, {skipCovered: true})", async () => {
-  const report = await processCoverage("./src/**/test-missing-lines.xml");
-  expect(report.total).toBe(51.24999999999999);
-  const files = report.files;
+  const reports = await processCoverage("./src/**/test-missing-lines.xml");
+  expect(reports.length).toBe(1);
+  expect(reports[0].total).toBe(51.24999999999999);
+  const files = reports[0].files;
   expect(files.length).toBe(8);
 
   expect(files[0].filename).toBe("all_lines_covered.py");
@@ -233,4 +248,14 @@ test("processCoverage(test-missing-lines.xml, {skipCovered: true})", async () =>
   expect(files[7].branch).toBe(0);
   expect(files[7].line).toBe(0);
   expect(files[7].missing).toBe("4");
+});
+
+test("trimFolder", () => {
+  expect(trimFolder("/a/b/c/file.xml", 7)).toBe("file.xml");
+  expect(trimFolder("/a/b/c/file.xml", 3)).toBe("/b/c");
+});
+
+test("longestCommonPrefix", () => {
+  expect(longestCommonPrefix(null)).toBe(0);
+  expect(longestCommonPrefix([])).toBe(0);
 });

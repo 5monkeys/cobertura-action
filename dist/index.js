@@ -13542,14 +13542,14 @@ const util = __webpack_require__(669);
 const glob = __webpack_require__(294);
 const parseString = util.promisify(xml2js.parseString);
 
-async function processCoverage(path, options) {
-  options = options || { skipCovered: false };
-
-  if (glob.hasMagic(path)) {
-    const paths = await glob(path);
-    path = paths[0];
-  }
-
+/**
+ * generate the report for the given file
+ *
+ * @param path: string
+ * @param options: object
+ * @return {Promise<{total: number, line: number, files: T[], branch: number}>}
+ */
+async function readCoverageFromFile(path, options) {
   const xml = await fs.readFile(path, "utf-8");
   const { coverage } = await parseString(xml, {
     explicitArray: false,
@@ -13574,6 +13574,40 @@ async function processCoverage(path, options) {
   };
 }
 
+function trimFolder(path, positionOfFirstDiff) {
+  const lastFolder = path.lastIndexOf("/") + 1;
+  if (positionOfFirstDiff >= lastFolder) {
+    return path.substr(lastFolder);
+  } else {
+    const startOffset = Math.min(positionOfFirstDiff - 1, lastFolder);
+    const length = path.length - startOffset - lastFolder - 2; // remove filename
+    return path.substr(startOffset, length);
+  }
+}
+
+/**
+ *
+ * @param path: string
+ * @param options: {}
+ * @returns {Promise<{total: number, folder: string, line: number, files: T[], branch: number}[]>}
+ */
+async function processCoverage(path, options) {
+  options = options || { skipCovered: false };
+
+  const paths = glob.hasMagic(path) ? await glob(path) : [path];
+  const positionOfFirstDiff = longestCommonPrefix(paths);
+  return await Promise.all(
+    paths.map(async (path) => {
+      const report = await readCoverageFromFile(path, options);
+      const folder = trimFolder(path, positionOfFirstDiff);
+      return {
+        ...report,
+        folder,
+      };
+    })
+  );
+}
+
 function processPackages(packages) {
   if (packages.package instanceof Array) {
     return packages.package.map((p) => processPackage(p)).flat();
@@ -13596,6 +13630,12 @@ function processPackage(packageObj) {
   }
 }
 
+/**
+ * returns coverage rates
+ *
+ * @param element: object
+ * @returns {{total: number, line: number, branch: number}}
+ */
 function calculateRates(element) {
   const line = parseFloat(element["line-rate"]) * 100;
   const branch = parseFloat(element["branch-rate"]) * 100;
@@ -13645,7 +13685,7 @@ function formatLines(statements, lines) {
   const ranges = [];
   let start = null;
   let linesCursor = 0;
-  let end = null;
+  let end;
   for (const statement of statements) {
     if (linesCursor >= lines.length) break;
 
@@ -13674,8 +13714,32 @@ function formatLines(statements, lines) {
     .join(", ");
 }
 
+/**
+ *
+ * @param paths: [string]
+ * @returns number
+ */
+function longestCommonPrefix(paths) {
+  let prefix = "";
+  if (paths === null || paths.length === 0) return 0;
+
+  for (let i = 0; i < paths[0].length; i++) {
+    const char = paths[0][i]; // loop through all characters of the very first string.
+
+    for (let j = 1; j < paths.length; j++) {
+      // loop through all other strings in the array
+      if (paths[j][i] !== char) return prefix.length;
+    }
+    prefix = prefix + char;
+  }
+
+  return prefix.length;
+}
+
 module.exports = {
   processCoverage,
+  trimFolder,
+  longestCommonPrefix,
 };
 
 
@@ -15906,8 +15970,8 @@ async function action(payload) {
     ? await listChangedFiles(pullRequestNumber)
     : null;
 
-  const report = await processCoverage(path, { skipCovered });
-  const comment = markdownReport(report, commit, {
+  const reports = await processCoverage(path, { skipCovered });
+  const comment = markdownReport(reports, commit, {
     minimumCoverage,
     showLine,
     showBranch,
@@ -15920,7 +15984,7 @@ async function action(payload) {
   await addComment(pullRequestNumber, comment, reportName);
 }
 
-function markdownReport(report, commit, options) {
+function markdownReport(reports, commit, options) {
   const {
     minimumCoverage = 100,
     showLine = false,
@@ -15937,74 +16001,81 @@ function markdownReport(report, commit, options) {
     str.length > at ? str.slice(0, at).concat("...") : str;
   // Setup files
   const files = [];
-  for (const file of report.files.filter(
-    (file) => filteredFiles == null || filteredFiles.includes(file.filename)
-  )) {
-    const fileTotal = Math.round(file.total);
-    const fileLines = Math.round(file.line);
-    const fileBranch = Math.round(file.branch);
-    const fileMissing =
-      showMissingMaxLength > 0
-        ? crop(file.missing, showMissingMaxLength)
-        : file.missing;
-    files.push([
-      escapeMarkdown(showClassNames ? file.name : file.filename),
-      `\`${fileTotal}%\``,
-      showLine ? `\`${fileLines}%\`` : undefined,
-      showBranch ? `\`${fileBranch}%\`` : undefined,
-      status(fileTotal),
-      showMissing ? (fileMissing ? `\`${fileMissing}\`` : " ") : undefined,
-    ]);
+  let output = "";
+  for (const report of reports) {
+    const folder = reports.length <= 1 ? "" : ` ${report.folder}`;
+    for (const file of report.files.filter(
+      (file) => filteredFiles == null || filteredFiles.includes(file.filename)
+    )) {
+      const fileTotal = Math.round(file.total);
+      const fileLines = Math.round(file.line);
+      const fileBranch = Math.round(file.branch);
+      const fileMissing =
+        showMissingMaxLength > 0
+          ? crop(file.missing, showMissingMaxLength)
+          : file.missing;
+      files.push([
+        escapeMarkdown(showClassNames ? file.name : file.filename),
+        `\`${fileTotal}%\``,
+        showLine ? `\`${fileLines}%\`` : undefined,
+        showBranch ? `\`${fileBranch}%\`` : undefined,
+        status(fileTotal),
+        showMissing ? (fileMissing ? `\`${fileMissing}\`` : " ") : undefined,
+      ]);
+    }
+
+    // Construct table
+    /*
+    | File          | Coverage |                    |
+    |---------------|:--------:|:------------------:|
+    | **All files** | `78%`    | :x:                |
+    | foo.py        | `80%`    | :white_check_mark: |
+    | bar.py        | `75%`    | :x:                |
+
+    _Minimum allowed coverage is `80%`_
+    */
+
+    const total = Math.round(report.total);
+    const linesTotal = Math.round(report.line);
+    const branchTotal = Math.round(report.branch);
+    const table = [
+      [
+        "File",
+        "Coverage",
+        showLine ? "Lines" : undefined,
+        showBranch ? "Branches" : undefined,
+        " ",
+        showMissing ? "Missing" : undefined,
+      ],
+      [
+        "-",
+        ":-:",
+        showLine ? ":-:" : undefined,
+        showBranch ? ":-:" : undefined,
+        ":-:",
+        showMissing ? ":-:" : undefined,
+      ],
+      [
+        "**All files**",
+        `\`${total}%\``,
+        showLine ? `\`${linesTotal}%\`` : undefined,
+        showBranch ? `\`${branchTotal}%\`` : undefined,
+        status(total),
+        showMissing ? " " : undefined,
+      ],
+      ...files,
+    ]
+      .map((row) => {
+        return `| ${row.filter(Boolean).join(" | ")} |`;
+      })
+      .join("\n");
+    const titleText = `<strong>${reportName}${folder}</strong>`;
+    output += `${titleText}\n\n${table}\n\n`;
   }
-  // Construct table
-  /*
-  | File          | Coverage |                    |
-  |---------------|:--------:|:------------------:|
-  | **All files** | `78%`    | :x:                |
-  | foo.py        | `80%`    | :white_check_mark: |
-  | bar.py        | `75%`    | :x:                |
-
-  _Minimum allowed coverage is `80%`_
-  */
-
-  const total = Math.round(report.total);
-  const linesTotal = Math.round(report.line);
-  const branchTotal = Math.round(report.branch);
-  const table = [
-    [
-      "File",
-      "Coverage",
-      showLine ? "Lines" : undefined,
-      showBranch ? "Branches" : undefined,
-      " ",
-      showMissing ? "Missing" : undefined,
-    ],
-    [
-      "-",
-      ":-:",
-      showLine ? ":-:" : undefined,
-      showBranch ? ":-:" : undefined,
-      ":-:",
-      showMissing ? ":-:" : undefined,
-    ],
-    [
-      "**All files**",
-      `\`${total}%\``,
-      showLine ? `\`${linesTotal}%\`` : undefined,
-      showBranch ? `\`${branchTotal}%\`` : undefined,
-      status(total),
-      showMissing ? " " : undefined,
-    ],
-    ...files,
-  ]
-    .map((row) => {
-      return `| ${row.filter(Boolean).join(" | ")} |`;
-    })
-    .join("\n");
   const minimumCoverageText = `_Minimum allowed coverage is \`${minimumCoverage}%\`_`;
   const footerText = `<p align="right">${credits} against ${commit} </p>`;
-  const titleText = `<strong>${reportName}</strong>`;
-  return `${titleText}\n\n${table}\n\n${minimumCoverageText}\n\n${footerText}`;
+  output += `${minimumCoverageText}\n\n${footerText}`;
+  return output;
 }
 
 async function addComment(pullRequestNumber, body, reportName) {
@@ -16066,7 +16137,7 @@ async function pullRequestInfo(payload = {}) {
       state: "open",
     });
     pullRequestNumber = data
-      .filter((d) => d.head.sha == commit)
+      .filter((d) => d.head.sha === commit)
       .reduce((n, d) => d.number, "");
   } else if (payload.pull_request) {
     // try to find the PR from payload
