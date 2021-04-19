@@ -35,6 +35,14 @@ The path to the cobertura report. Defaults to `coverage.xml`. Glob pattern is su
 
 If files with 100% coverage should be ignored. Defaults to `true`.
 
+### `skip_above_minimum`
+
+If files with coverage above minimum threshold should be skipped from report.
+
+### `skip_comment_on_minimum`
+
+Do not comment report if total coverage is above or equal to the minimum coverage.
+
 ### `minimum_coverage`
 
 The minimum allowed coverage percentage as an integer.

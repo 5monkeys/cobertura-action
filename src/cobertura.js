@@ -29,7 +29,8 @@ async function readCoverageFromFile(path, options) {
         missing: missingLines(klass),
       };
     })
-    .filter((file) => options.skipCovered === false || file.total < 100);
+    .filter((file) => options.skipCovered === false || file.total < 100)
+    .filter((file) => options.skipAboveMinimum === false || file.total < options.minimumCoverage);
   return {
     ...calculateRates(coverage),
     files,
@@ -54,7 +55,13 @@ function trimFolder(path, positionOfFirstDiff) {
  * @returns {Promise<{total: number, folder: string, line: number, files: T[], branch: number}[]>}
  */
 async function processCoverage(path, options) {
-  options = options || { skipCovered: false };
+  options = {
+      skipCovered: false,
+      skipAboveMinimum: false,
+      skipReportAboveMinimum: false,
+      minimalCoverage: 100,
+      ...options || {}
+  };
 
   const paths = glob.hasMagic(path) ? await glob(path) : [path];
   const positionOfFirstDiff = longestCommonPrefix(paths);
@@ -66,7 +73,7 @@ async function processCoverage(path, options) {
         ...report,
         folder,
       };
-    })
+    }).filter((report) => options.skipReportAboveMinimum == false || report.total < options.minimumCoverage)
   );
 }
 

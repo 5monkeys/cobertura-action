@@ -13567,7 +13567,8 @@ async function readCoverageFromFile(path, options) {
         missing: missingLines(klass),
       };
     })
-    .filter((file) => options.skipCovered === false || file.total < 100);
+    .filter((file) => options.skipCovered === false || file.total < 100)
+    .filter((file) => options.skipAboveMinimum === false || file.total < options.minimumCoverage);
   return {
     ...calculateRates(coverage),
     files,
@@ -13592,7 +13593,13 @@ function trimFolder(path, positionOfFirstDiff) {
  * @returns {Promise<{total: number, folder: string, line: number, files: T[], branch: number}[]>}
  */
 async function processCoverage(path, options) {
-  options = options || { skipCovered: false };
+  options = {
+      skipCovered: false,
+      skipAboveMinimum: false,
+      skipReportAboveMinimum: false,
+      minimalCoverage: 100,
+      ...options || {}
+  };
 
   const paths = glob.hasMagic(path) ? await glob(path) : [path];
   const positionOfFirstDiff = longestCommonPrefix(paths);
@@ -13604,7 +13611,7 @@ async function processCoverage(path, options) {
         ...report,
         folder,
       };
-    })
+    }).filter((report) => options.skipReportAboveMinimum == false || report.total < options.minimumCoverage)
   );
 }
 
@@ -15942,6 +15949,12 @@ async function action(payload) {
   const skipCovered = JSON.parse(
     core.getInput("skip_covered", { required: true })
   );
+  const skipAboveMinimum = JSON.parse(
+    core.getInput("skip_above_minimum", { required: true })
+  );
+  const skipReportAboveMinimum = JSON.parse(
+    core.getInput("skip_report_above_minimum", {required: true})
+  );
   const showLine = JSON.parse(core.getInput("show_line", { required: true }));
   const showBranch = JSON.parse(
     core.getInput("show_branch", { required: true })
@@ -15970,18 +15983,26 @@ async function action(payload) {
     ? await listChangedFiles(pullRequestNumber)
     : null;
 
-  const reports = await processCoverage(path, { skipCovered });
-  const comment = markdownReport(reports, commit, {
-    minimumCoverage,
-    showLine,
-    showBranch,
-    showClassNames,
-    showMissing,
-    showMissingMaxLength,
-    filteredFiles: changedFiles,
-    reportName,
+  const reports = await processCoverage(path, {
+       skipCovered,
+       skipAboveMinimum,
+       skipReportAboveMinimum,
+       minimumCoverage
   });
-  await addComment(pullRequestNumber, comment, reportName);
+
+  if (reports.length) {
+      const comment = markdownReport(reports, commit, {
+        minimumCoverage,
+        showLine,
+        showBranch,
+        showClassNames,
+        showMissing,
+        showMissingMaxLength,
+        filteredFiles: changedFiles,
+        reportName
+      });
+      await addComment(pullRequestNumber, comment, reportName);
+  }
 }
 
 function markdownReport(reports, commit, options) {
