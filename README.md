@@ -39,7 +39,7 @@ If files with 100% coverage should be ignored. Defaults to `true`.
 
 If files with coverage above minimum threshold should be skipped from report.
 
-### `skip_comment_on_minimum`
+### `skip_report_above_minimum`
 
 Do not comment report if total coverage is above or equal to the minimum coverage.
 
