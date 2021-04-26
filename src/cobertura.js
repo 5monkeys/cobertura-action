@@ -30,7 +30,11 @@ async function readCoverageFromFile(path, options) {
       };
     })
     .filter((file) => options.skipCovered === false || file.total < 100)
-    .filter((file) => options.skipAboveMinimum === false || file.total < options.minimumCoverage);
+    .filter(
+      (file) =>
+        options.skipAboveMinimum === false ||
+        file.total < options.minimumCoverage
+    );
   return {
     ...calculateRates(coverage),
     files,
@@ -56,24 +60,30 @@ function trimFolder(path, positionOfFirstDiff) {
  */
 async function processCoverage(path, options) {
   options = {
-      skipCovered: false,
-      skipAboveMinimum: false,
-      skipReportAboveMinimum: false,
-      minimalCoverage: 100,
-      ...options || {}
+    skipCovered: false,
+    skipAboveMinimum: false,
+    skipReportAboveMinimum: false,
+    minimalCoverage: 100,
+    ...(options || {}),
   };
 
   const paths = glob.hasMagic(path) ? await glob(path) : [path];
   const positionOfFirstDiff = longestCommonPrefix(paths);
   return await Promise.all(
-    paths.map(async (path) => {
-      const report = await readCoverageFromFile(path, options);
-      const folder = trimFolder(path, positionOfFirstDiff);
-      return {
-        ...report,
-        folder,
-      };
-    }).filter((report) => options.skipReportAboveMinimum == false || report.total < options.minimumCoverage)
+    paths
+      .map(async (path) => {
+        const report = await readCoverageFromFile(path, options);
+        const folder = trimFolder(path, positionOfFirstDiff);
+        return {
+          ...report,
+          folder,
+        };
+      })
+      .filter(
+        (report) =>
+          options.skipReportAboveMinimum == false ||
+          report.total < options.minimumCoverage
+      )
   );
 }
 

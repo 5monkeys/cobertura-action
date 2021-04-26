@@ -23,7 +23,7 @@ async function action(payload) {
     core.getInput("skip_above_minimum", { required: true })
   );
   const skipReportAboveMinimum = JSON.parse(
-    core.getInput("skip_report_above_minimum", {required: true})
+    core.getInput("skip_report_above_minimum", { required: true })
   );
   const showLine = JSON.parse(core.getInput("show_line", { required: true }));
   const showBranch = JSON.parse(
@@ -54,24 +54,24 @@ async function action(payload) {
     : null;
 
   const reports = await processCoverage(path, {
-       skipCovered,
-       skipAboveMinimum,
-       skipReportAboveMinimum,
-       minimumCoverage
+    skipCovered,
+    skipAboveMinimum,
+    skipReportAboveMinimum,
+    minimumCoverage,
   });
 
   if (reports.length) {
-      const comment = markdownReport(reports, commit, {
-        minimumCoverage,
-        showLine,
-        showBranch,
-        showClassNames,
-        showMissing,
-        showMissingMaxLength,
-        filteredFiles: changedFiles,
-        reportName
-      });
-      await addComment(pullRequestNumber, comment, reportName);
+    const comment = markdownReport(reports, commit, {
+      minimumCoverage,
+      showLine,
+      showBranch,
+      showClassNames,
+      showMissing,
+      showMissingMaxLength,
+      filteredFiles: changedFiles,
+      reportName,
+    });
+    await addComment(pullRequestNumber, comment, reportName);
   }
 }
 
