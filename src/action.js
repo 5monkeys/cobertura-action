@@ -84,9 +84,9 @@ function markdownReport(reports, commit, options) {
     for (const file of report.files.filter(
       (file) => filteredFiles == null || filteredFiles.includes(file.filename)
     )) {
-      const fileTotal = Math.round(file.total);
-      const fileLines = Math.round(file.line);
-      const fileBranch = Math.round(file.branch);
+      const fileTotal = Math.floor(file.total);
+      const fileLines = Math.floor(file.line);
+      const fileBranch = Math.floor(file.branch);
       const fileMissing =
         showMissingMaxLength > 0
           ? crop(file.missing, showMissingMaxLength)
@@ -112,9 +112,9 @@ function markdownReport(reports, commit, options) {
     _Minimum allowed coverage is `80%`_
     */
 
-    const total = Math.round(report.total);
-    const linesTotal = Math.round(report.line);
-    const branchTotal = Math.round(report.branch);
+    const total = Math.floor(report.total);
+    const linesTotal = Math.floor(report.line);
+    const branchTotal = Math.floor(report.branch);
     const table = [
       [
         "File",
