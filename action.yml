@@ -12,6 +12,14 @@ inputs:
     description: 'If files with 100% should be skipped from report.'
     required: true
     default: true
+  skip_above_minimum:
+    description: 'If files with coverage above minimum threshold should be skipped from report.'
+    required: true
+    default: false
+  skip_report_above_minimum:
+    description: 'Do not comment report if total coverage is above or equal to the minimum coverage.'
+    required: true
+    default: false
   minimum_coverage:
     description: 'Minimum allowed coverage percentage as an integer.'
     required: true
