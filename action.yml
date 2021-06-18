@@ -15,6 +15,10 @@ inputs:
   minimum_coverage:
     description: 'Minimum allowed coverage percentage as an integer.'
     required: true
+  fail_below_threshold:
+    description: 'Fail the action when the minimum coverage was not met.'
+    required: false
+    default: false
   show_line:
     description: 'Show line rate as specific column.'
     required: true
