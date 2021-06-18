@@ -238,7 +238,7 @@ test("action failing on coverage below threshold", async () => {
   );
 });
 
-test("action not failing on coverage at threshold", async () => {
+test("action not failing on coverage above threshold", async () => {
   const { action } = require("./action");
   const prNumber = 123;
   process.env["INPUT_PATH"] = "./src/fixtures/test-branch.xml";
