@@ -39,6 +39,10 @@ If files with 100% coverage should be ignored. Defaults to `true`.
 
 The minimum allowed coverage percentage as an integer.
 
+### `fail_below_threshold`
+
+Fail the action when the minimum coverage was not met.
+
 ### `show_line`
 
 Show line rate as specific column.

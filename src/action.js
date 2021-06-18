@@ -26,6 +26,9 @@ async function action(payload) {
   const minimumCoverage = parseInt(
     core.getInput("minimum_coverage", { required: true })
   );
+  const failBelowThreshold = JSON.parse(
+    core.getInput("fail_below_threshold", { required: false }) || "false"
+  );
   const showClassNames = JSON.parse(
     core.getInput("show_class_names", { required: true })
   );
@@ -59,6 +62,12 @@ async function action(payload) {
     reportName,
   });
   await addComment(pullRequestNumber, comment, reportName);
+
+  if (failBelowThreshold) {
+    if (reports.some((report) => Math.floor(report.total) < minimumCoverage)) {
+      core.setFailed("Minimum coverage requirement was not satisfied");
+    }
+  }
 }
 
 function markdownReport(reports, commit, options) {
