@@ -40,7 +40,7 @@ inputs:
     required: false
     default: ''
   only_changed_files:
-    description: 'Only show coverage for changed files.'
+    description: 'Only show coverage for changed files. (only if a PR is present)'
     required: true
     default: false
   pull_request_number:
