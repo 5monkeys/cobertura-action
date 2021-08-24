@@ -10,20 +10,15 @@ const credits = "Results for commit";
 
 async function action(payload) {
   const { pullRequestNumber, commit } = await pullRequestInfo(payload);
-  if (!pullRequestNumber || !commit) {
-    core.error("Found no pull request.");
-    return;
-  }
-
   const path = core.getInput("path", { required: true });
   const skipCovered = JSON.parse(
     core.getInput("skip_covered", { required: true })
   );
   const onlySummary = JSON.parse(
-      core.getInput("only_summary", { required: true })
+    core.getInput("only_summary", { required: true })
   );
   const useAnnotations = JSON.parse(
-      core.getInput("use_annotations", { required: true })
+    core.getInput("use_annotations", { required: true })
   );
   const showLine = JSON.parse(
     core.getInput("show_line", { required: true })
@@ -74,18 +69,22 @@ async function action(payload) {
     });
   }
 
-  const comment = markdownReport(reports, commit, {
-    minimumCoverage,
-    showLine,
-    showBranch,
-    showClassNames,
-    showMissing,
-    showMissingMaxLength,
-    filteredFiles: changedFiles,
-    reportName,
-    onlySummary,
-  });
-  await addComment(pullRequestNumber, comment, reportName);
+  if (pullRequestNumber && commit) {
+    const comment = markdownReport(reports, commit, {
+      minimumCoverage,
+      showLine,
+      showBranch,
+      showClassNames,
+      showMissing,
+      showMissingMaxLength,
+      filteredFiles: changedFiles,
+      reportName,
+      onlySummary,
+    });
+    await addComment(pullRequestNumber, comment, reportName);
+  } else {
+    core.warning("Found no pull request, skipping coverage comment.");
+  }
 
   if (failBelowThreshold) {
     if (reports.some((report) => Math.floor(report.total) < minimumCoverage)) {
