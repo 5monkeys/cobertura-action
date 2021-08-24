@@ -16147,20 +16147,13 @@ function annotationReport(reports, commit, options) {
     showMissing = false,
     showMissingMaxLength = -1,
     filteredFiles = null,
-    reportName = "Coverage Report",
   } = options || {};
-  const status = (total) =>
-      total >= minimumCoverage ? ":white_check_mark:" : ":x:";
   const covered = (total) =>
       total >= minimumCoverage;
   const crop = (str, at) =>
       str.length > at ? str.slice(0, at).concat("...") : str;
 
-  // Setup files
-  const files = [];
-  let output = "";
   for (const report of reports) {
-    const folder = reports.length <= 1 ? "" : ` ${report.folder}`;
     for (const file of report.files.filter(
         (file) => filteredFiles == null || filteredFiles.includes(file.filename)
     )) {
