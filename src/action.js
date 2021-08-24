@@ -254,65 +254,12 @@ function annotationReport(reports, commit, options) {
           `Coverage: ${fileTotal}%`,
           showLine ? `Lines: ${fileLines}%` : undefined,
           showBranch ? `Branches: ${fileBranch}%` : undefined,
-          status(fileTotal),
           showMissing ? (fileMissing ? `Missing: ${fileMissing}` : " ") : undefined,
         ];
         core.warning(annotation.filter(Boolean).join(", "));
       }
+    }
   }
-
-    // Construct table
-    /*
-    | File          | Coverage |                    |
-    |---------------|:--------:|:------------------:|
-    | **All files** | `78%`    | :x:                |
-    | foo.py        | `80%`    | :white_check_mark: |
-    | bar.py        | `75%`    | :x:                |
-
-    _Minimum allowed coverage is `80%`_
-    */
-
-    const total = Math.floor(report.total);
-    const linesTotal = Math.floor(report.line);
-    const branchTotal = Math.floor(report.branch);
-    const table = [
-      [
-        "File",
-        "Coverage",
-        showLine ? "Lines" : undefined,
-        showBranch ? "Branches" : undefined,
-        " ",
-        showMissing ? "Missing" : undefined,
-      ],
-      [
-        "-",
-        ":-:",
-        showLine ? ":-:" : undefined,
-        showBranch ? ":-:" : undefined,
-        ":-:",
-        showMissing ? ":-:" : undefined,
-      ],
-      [
-        "**All files**",
-        `\`${total}%\``,
-        showLine ? `\`${linesTotal}%\`` : undefined,
-        showBranch ? `\`${branchTotal}%\`` : undefined,
-        status(total),
-        showMissing ? " " : undefined,
-      ],
-      ...files,
-    ]
-        .map((row) => {
-          return `| ${row.filter(Boolean).join(" | ")} |`;
-        })
-        .join("\n");
-    const titleText = `<strong>${reportName}${folder}</strong>`;
-    output += `${titleText}\n\n${table}\n\n`;
-  }
-  const minimumCoverageText = `_Minimum allowed coverage is \`${minimumCoverage}%\`_`;
-  const footerText = `<p>Results for commit ${commit}.</p>`;
-  output += `${minimumCoverageText}\n\n${footerText}`;
-  return output;
 }
 
 async function listChangedFiles(pullRequestNumber) {
