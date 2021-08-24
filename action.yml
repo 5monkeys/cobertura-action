@@ -16,6 +16,10 @@ inputs:
     description: 'Show only the summary, no details per file.'
     required: true
     default: false
+  use_annotations:
+    description: 'Add a warning annotation for each file below the threshold.'
+    required: true
+    default: false
   minimum_coverage:
     description: 'Minimum allowed coverage percentage as an integer.'
     required: true
