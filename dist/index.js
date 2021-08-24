@@ -15943,9 +15943,7 @@ async function action(payload) {
   const useAnnotations = JSON.parse(
     core.getInput("use_annotations", { required: true })
   );
-  const showLine = JSON.parse(
-    core.getInput("show_line", { required: true })
-  );
+  const showLine = JSON.parse(core.getInput("show_line", { required: true }));
   const showBranch = JSON.parse(
     core.getInput("show_branch", { required: true })
   );
@@ -15989,6 +15987,7 @@ async function action(payload) {
       filteredFiles: changedFiles,
       reportName,
       onlySummary,
+      failBelowThreshold,
     });
   }
 
@@ -16006,7 +16005,7 @@ async function action(payload) {
     });
     await addComment(pullRequestNumber, comment, reportName);
   } else {
-    core.warning("Found no pull request, skipping coverage comment.");
+    core.info("Found no pull request, skipping coverage comment.");
   }
 
   if (failBelowThreshold) {
@@ -16029,24 +16028,24 @@ function markdownReport(reports, commit, options) {
     onlySummary = false,
   } = options || {};
   const status = (total) =>
-      total >= minimumCoverage ? ":white_check_mark:" : ":x:";
+    total >= minimumCoverage ? ":white_check_mark:" : ":x:";
   const crop = (str, at) =>
-      str.length > at ? str.slice(0, at).concat("...") : str;
+    str.length > at ? str.slice(0, at).concat("...") : str;
   // Setup files
   const files = [];
   let output = "## Coverage Report\n";
   for (const report of reports) {
     const folder = reports.length <= 1 ? "" : ` ${report.folder}`;
     for (const file of report.files.filter(
-        (file) => filteredFiles == null || filteredFiles.includes(file.filename)
+      (file) => filteredFiles == null || filteredFiles.includes(file.filename)
     )) {
       const fileTotal = Math.floor(file.total);
       const fileLines = Math.floor(file.line);
       const fileBranch = Math.floor(file.branch);
       const fileMissing =
-          showMissingMaxLength > 0
-              ? crop(file.missing, showMissingMaxLength)
-              : file.missing;
+        showMissingMaxLength > 0
+          ? crop(file.missing, showMissingMaxLength)
+          : file.missing;
       if (false === onlySummary) {
         files.push([
           escapeMarkdown(showClassNames ? file.name : file.filename),
@@ -16100,10 +16099,10 @@ function markdownReport(reports, commit, options) {
       ],
       ...files,
     ]
-        .map((row) => {
-          return `| ${row.filter(Boolean).join(" | ")} |`;
-        })
-        .join("\n");
+      .map((row) => {
+        return `| ${row.filter(Boolean).join(" | ")} |`;
+      })
+      .join("\n");
     const titleText = `<strong>${reportName}${folder}</strong>`;
     output += `${titleText}\n\n${table}\n\n`;
   }
@@ -16146,32 +16145,41 @@ function annotationReport(reports, commit, options) {
     showMissing = false,
     showMissingMaxLength = -1,
     filteredFiles = null,
+    failBelowThreshold = false,
   } = options || {};
-  const covered = (total) =>
-      total >= minimumCoverage;
+  const covered = (total) => total >= minimumCoverage;
   const crop = (str, at) =>
-      str.length > at ? str.slice(0, at).concat("...") : str;
+    str.length > at ? str.slice(0, at).concat("...") : str;
 
   for (const report of reports) {
     for (const file of report.files.filter(
-        (file) => filteredFiles == null || filteredFiles.includes(file.filename)
+      (file) => filteredFiles == null || filteredFiles.includes(file.filename)
     )) {
       const fileTotal = Math.floor(file.total);
       if (!covered(fileTotal)) {
         const fileLines = Math.floor(file.line);
         const fileBranch = Math.floor(file.branch);
         const fileMissing =
-            showMissingMaxLength > 0
-                ? crop(file.missing, showMissingMaxLength)
-                : file.missing;
+          showMissingMaxLength > 0
+            ? crop(file.missing, showMissingMaxLength)
+            : file.missing;
         const annotation = [
           escapeMarkdown(showClassNames ? file.name : file.filename),
           `Coverage: ${fileTotal}%`,
           showLine ? `Lines: ${fileLines}%` : undefined,
           showBranch ? `Branches: ${fileBranch}%` : undefined,
-          showMissing ? (fileMissing ? `Missing: ${fileMissing}` : " ") : undefined,
+          showMissing
+            ? fileMissing
+              ? `Missing: ${fileMissing}`
+              : " "
+            : undefined,
         ];
-        core.warning(annotation.filter(Boolean).join(", "));
+        const message = annotation.filter(Boolean).join(", ");
+        if (failBelowThreshold) {
+          core.error(message);
+        } else {
+          core.warning(message);
+        }
       }
     }
   }
