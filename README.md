@@ -19,7 +19,15 @@ artifacts to circumvent this. See the workflows in this project for an implement
 
 ## How it looks like
 
+A comment is added to the pull request with the coverage report.
+
 ![alt text](img/comment.png "Pull request comment with metrics")
+
+A check is added to the workflow run.
+
+![alt text](img/check.png "Check with metrics")
+
+The check will suceed or fail based on your threshold, this allows you to mandate coverage checks pass on your [protected branches](https://docs.github.com/en/github/administering-a-repository/defining-the-mergeability-of-pull-requests/about-protected-branches).
 
 ## Inputs
 
@@ -78,6 +86,8 @@ Use a unique name for the report and comment.
 ### `pull_request_number` **Optional**
 
 Pull request number associated with the report. This property should be used when workflow trigger is different than `pull_request`.
+
+If no pull request can determine the action will skip adding the comment.
 
 ## Example usage
 
