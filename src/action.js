@@ -218,20 +218,14 @@ async function listChangedFiles(pullRequestNumber) {
   return files.data.map((file) => file.filename);
 }
 
-/**
- *
- * @param payload
- * @returns {Promise<{pullRequestNumber: number, commit: null}>}
- */
-async function pullRequestInfo(payload = {}, event_type) {
+async function pullRequestInfo(payload = {}) {
   let commit = null;
   let pullRequestNumber = core.getInput("pull_request_number", {
     required: false,
   });
 
   if (pullRequestNumber) {
-    // use the supplied PR
-
+    // Use the supplied PR
     pullRequestNumber = parseInt(pullRequestNumber);
     const { data } = await client.rest.pulls.get({
       pull_number: pullRequestNumber,
@@ -239,7 +233,7 @@ async function pullRequestInfo(payload = {}, event_type) {
     });
     commit = data.head.sha;
   } else if (payload.workflow_run) {
-    // fetch all open PRs and match the commit hash.
+    // Fetch all open PRs and match the commit hash.
     commit = payload.workflow_run.head_commit.id;
     const { data } = await client.rest.pulls.list({
       ...github.context.repo,
@@ -248,13 +242,13 @@ async function pullRequestInfo(payload = {}, event_type) {
     pullRequestNumber = data
       .filter((d) => d.head.sha === commit)
       .reduce((n, d) => d.number, "");
-  } else if (payload.after) {
-    commit = payload.after;
   } else if (payload.pull_request) {
-    // try to find the PR from payload
+    // Try to find the PR from payload
     const { pull_request: pullRequest } = payload;
     pullRequestNumber = pullRequest.number;
     commit = pullRequest.head.sha;
+  } else if (payload.after) {
+    commit = payload.after;
   }
 
   return { pullRequestNumber, commit };
