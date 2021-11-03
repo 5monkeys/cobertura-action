@@ -27,7 +27,7 @@ A check is added to the workflow run.
 
 ![alt text](img/check.png "Check with metrics")
 
-The check will suceed or fail based on your threshold, this allows you to mandate coverage checks pass on your [protected branches](https://docs.github.com/en/github/administering-a-repository/defining-the-mergeability-of-pull-requests/about-protected-branches).
+The check will succeed or fail based on your threshold when `fail_below_threshold` is set to `true`, this allows you to mandate coverage checks pass on your [protected branches](https://docs.github.com/en/github/administering-a-repository/defining-the-mergeability-of-pull-requests/about-protected-branches).
 
 ## Inputs
 
