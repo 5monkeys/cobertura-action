@@ -18223,7 +18223,12 @@ async function action(payload) {
   if (pullRequestNumber) {
     await addComment(pullRequestNumber, comment, reportName);
   }
-  await addCheck(comment, reportName, commit, belowThreshold);
+  await addCheck(
+    comment,
+    reportName,
+    commit,
+    failBelowThreshold ? (belowThreshold ? "failure" : "success") : "neutral"
+  );
 
   if (failBelowThreshold && belowThreshold) {
     core.setFailed("Minimum coverage requirement was not satisfied");
@@ -18348,14 +18353,14 @@ async function addComment(pullRequestNumber, body, reportName) {
   }
 }
 
-async function addCheck(body, reportName, sha, belowThreshold) {
+async function addCheck(body, reportName, sha, conclusion) {
   const checkName = reportName ? reportName : "coverage";
 
   await client.rest.checks.create({
     name: checkName,
     head_sha: sha,
     status: "completed",
-    conclusion: belowThreshold ? "failure" : "success",
+    conclusion: conclusion,
     output: {
       title: checkName,
       summary: body,

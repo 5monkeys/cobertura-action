@@ -105,6 +105,7 @@ test("action triggered by push", async () => {
   process.env["INPUT_SHOW_BRANCH"] = "false";
   process.env["INPUT_SHOW_LINE"] = "false";
   process.env["INPUT_MINIMUM_COVERAGE"] = "100";
+  process.env["INPUT_FAIL_BELOW_THRESHOLD"] = "true";
   process.env["INPUT_SHOW_CLASS_NAMES"] = "false";
   process.env["INPUT_ONLY_CHANGED_FILES"] = "false";
 
@@ -655,7 +656,7 @@ test("addCheck", async () => {
     .post(`/repos/${owner}/${repo}/check-runs`)
     .reply(200);
 
-  await addCheck("foo", "bar", "fake_sha");
+  await addCheck("foo", "bar", "fake_sha", "success");
 
   expect(checkRunMock.pendingMocks().length).toBe(0);
 });
