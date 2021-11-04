@@ -19,7 +19,12 @@ async function action(payload) {
   const skipCovered = JSON.parse(
     core.getInput("skip_covered", { required: true })
   );
-  const showLine = JSON.parse(core.getInput("show_line", { required: true }));
+  const onlySummary = JSON.parse(
+    core.getInput("only_summary", { required: true })
+  );
+  const showLine = JSON.parse(
+    core.getInput("show_line", { required: true })
+  );
   const showBranch = JSON.parse(
     core.getInput("show_branch", { required: true })
   );
@@ -60,6 +65,7 @@ async function action(payload) {
     showMissingMaxLength,
     filteredFiles: changedFiles,
     reportName,
+    onlySummary,
   });
 
   const belowThreshold = reports.some(
@@ -91,6 +97,7 @@ function markdownReport(reports, commit, options) {
     showMissingMaxLength = -1,
     filteredFiles = null,
     reportName = "Coverage Report",
+    onlySummary = false,
   } = options || {};
   const status = (total) =>
     total >= minimumCoverage ? ":white_check_mark:" : ":x:";
@@ -111,14 +118,16 @@ function markdownReport(reports, commit, options) {
         showMissingMaxLength > 0
           ? crop(file.missing, showMissingMaxLength)
           : file.missing;
-      files.push([
-        escapeMarkdown(showClassNames ? file.name : file.filename),
-        `\`${fileTotal}%\``,
-        showLine ? `\`${fileLines}%\`` : undefined,
-        showBranch ? `\`${fileBranch}%\`` : undefined,
-        status(fileTotal),
-        showMissing ? (fileMissing ? `\`${fileMissing}\`` : " ") : undefined,
-      ]);
+      if (false === onlySummary) {
+        files.push([
+          escapeMarkdown(showClassNames ? file.name : file.filename),
+          `\`${fileTotal}%\``,
+          showLine ? `\`${fileLines}%\`` : undefined,
+          showBranch ? `\`${fileBranch}%\`` : undefined,
+          status(fileTotal),
+          showMissing ? (fileMissing ? `\`${fileMissing}\`` : " ") : undefined,
+        ]);
+      }
     }
 
     // Construct table
