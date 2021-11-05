@@ -67,6 +67,10 @@ Show class names instead of file names.
 
 Show line numbers of statements, per module, that weren't executed.
 
+### `show_missing_fraction`
+
+Show line numbers of statements, per module, that was not executed as a fraction of the total number of statements
+
 ### `show_missing_max_length`
 
 Crop missing line numbers strings that exceeds this length, provided as an integer.

@@ -35,6 +35,9 @@ async function action(payload) {
   const showMissing = JSON.parse(
     core.getInput("show_missing", { required: true })
   );
+  const showMissingFraction = JSON.parse(
+    core.getInput("show_missing_fraction", { required: true })
+  );
   let showMissingMaxLength = core.getInput("show_missing_max_length", {
     required: false,
   });
@@ -57,6 +60,7 @@ async function action(payload) {
     showBranch,
     showClassNames,
     showMissing,
+    showMissingFraction,
     showMissingMaxLength,
     filteredFiles: changedFiles,
     reportName,
@@ -88,6 +92,7 @@ function markdownReport(reports, commit, options) {
     showBranch = false,
     showClassNames = false,
     showMissing = false,
+    showMissingFraction = false,
     showMissingMaxLength = -1,
     filteredFiles = null,
     reportName = "Coverage Report",
@@ -111,6 +116,7 @@ function markdownReport(reports, commit, options) {
         showMissingMaxLength > 0
           ? crop(file.missing, showMissingMaxLength)
           : file.missing;
+      const fileMissingFraction = file.missingFraction;
       files.push([
         escapeMarkdown(showClassNames ? file.name : file.filename),
         `\`${fileTotal}%\``,
@@ -118,6 +124,11 @@ function markdownReport(reports, commit, options) {
         showBranch ? `\`${fileBranch}%\`` : undefined,
         status(fileTotal),
         showMissing ? (fileMissing ? `\`${fileMissing}\`` : " ") : undefined,
+        showMissingFraction
+          ? fileMissingFraction
+            ? `\`${fileMissingFraction}\``
+            : " "
+          : undefined,
       ]);
     }
 
@@ -141,8 +152,9 @@ function markdownReport(reports, commit, options) {
         "Coverage",
         showLine ? "Lines" : undefined,
         showBranch ? "Branches" : undefined,
-        " ",
+        "> Threshold",
         showMissing ? "Missing" : undefined,
+        showMissingFraction ? "Missing (:heavy_division_sign:)" : undefined,
       ],
       [
         "-",
@@ -151,6 +163,7 @@ function markdownReport(reports, commit, options) {
         showBranch ? ":-:" : undefined,
         ":-:",
         showMissing ? ":-:" : undefined,
+        showMissingFraction ? ":-:" : undefined,
       ],
       [
         "**All files**",
@@ -159,6 +172,7 @@ function markdownReport(reports, commit, options) {
         showBranch ? `\`${branchTotal}%\`` : undefined,
         status(total),
         showMissing ? " " : undefined,
+        showMissingFraction ? " " : undefined,
       ],
       ...files,
     ]

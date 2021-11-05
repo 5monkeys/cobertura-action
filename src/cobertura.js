@@ -26,7 +26,8 @@ async function readCoverageFromFile(path, options) {
         ...calculateRates(klass),
         filename: klass["filename"],
         name: klass["name"],
-        missing: missingLines(klass),
+        missing: missingLines(klass, false),
+        missingFraction: missingLines(klass, true),
       };
     })
     .filter((file) => options.skipCovered === false || file.total < 100);
@@ -119,7 +120,7 @@ function getLines(klass) {
   }
 }
 
-function missingLines(klass) {
+function missingLines(klass, asFraction) {
   // Bail if line-rate says fully covered
   if (parseFloat(klass["line-rate"]) >= 1.0) return "";
 
@@ -130,6 +131,9 @@ function missingLines(klass) {
   const misses = lines
     .filter((line) => parseInt(line.hits) < 1)
     .map((line) => line.number);
+  if (asFraction) {
+    return misses.length + "/" + statements.length;
+  }
   return formatLines(statements, misses);
 }
 
