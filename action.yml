@@ -4,6 +4,7 @@ inputs:
   repo_token:
     description: 'The GITHUB_TOKEN for this repo'
     required: true
+    default: ${{ github.token }}
   path:
     description: 'Path to the cobertura file.'
     required: true
