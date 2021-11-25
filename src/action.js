@@ -81,6 +81,62 @@ async function action(payload) {
   }
 }
 
+function formatFileUrl(fileName) {
+  const repo = github.context.repo;
+  const sha = github.sha;
+  return `https://github.com/${repo.owner}/${repo.repo}/blob/${sha}/${fileName}`;
+}
+
+function formatRangeText([start, end]) {
+  return `${start}` + (start === end ? "" : `-${end}`);
+}
+
+function tickWrap(string) {
+  return "`" + string + "`";
+}
+
+function cropRangeList(separator, showMissingMaxLength, ranges) {
+  if (showMissingMaxLength <= 0) return [ranges, false];
+  let accumulatedJoin = "";
+  for (const [index, range] of ranges.entries()) {
+    accumulatedJoin += `${separator}${range}`;
+    if (index === 0) continue;
+    if (accumulatedJoin.length > showMissingMaxLength)
+      return [ranges.slice(0, index), true];
+  }
+  return [ranges, false];
+}
+
+function linkRange(fileUrl, range) {
+  const [start, end] = range.replaceAll("`", "").split("-", 2);
+  const rangeReference = `L${start}` + (end ? `-L${end}` : "");
+  const url = `${fileUrl}#${rangeReference}`;
+  return `[${range}](${url})`;
+}
+
+function formatMissingLines(
+  fileUrl,
+  lineRanges,
+  showMissingMaxLength,
+  showMissingLineLinks
+) {
+  const formatted = lineRanges.map(formatRangeText);
+  const separator = " ";
+  // Apply cropping before inserting ticks and linking, so that only non-syntax
+  // characters are counted.
+  const [cropped, isCropped] = cropRangeList(
+    separator,
+    showMissingMaxLength,
+    formatted
+  );
+  const wrapped = cropped.map(tickWrap);
+  const linked = showMissingLineLinks
+    ? wrapped.map((range) => linkRange(fileUrl, range))
+    : wrapped;
+  const joined = linked.join(separator) + (isCropped ? " &hellip;" : "");
+  return joined || " ";
+}
+
 function markdownReport(reports, commit, options) {
   const {
     minimumCoverage = 100,
@@ -89,13 +145,12 @@ function markdownReport(reports, commit, options) {
     showClassNames = false,
     showMissing = false,
     showMissingMaxLength = -1,
+    showMissingLinks = false,
     filteredFiles = null,
     reportName = "Coverage Report",
   } = options || {};
   const status = (total) =>
     total >= minimumCoverage ? ":white_check_mark:" : ":x:";
-  const crop = (str, at) =>
-    str.length > at ? str.slice(0, at).concat("...") : str;
   // Setup files
   const files = [];
   let output = "";
@@ -107,17 +162,20 @@ function markdownReport(reports, commit, options) {
       const fileTotal = Math.floor(file.total);
       const fileLines = Math.floor(file.line);
       const fileBranch = Math.floor(file.branch);
-      const fileMissing =
-        showMissingMaxLength > 0
-          ? crop(file.missing, showMissingMaxLength)
-          : file.missing;
       files.push([
         escapeMarkdown(showClassNames ? file.name : file.filename),
         `\`${fileTotal}%\``,
         showLine ? `\`${fileLines}%\`` : undefined,
         showBranch ? `\`${fileBranch}%\`` : undefined,
         status(fileTotal),
-        showMissing ? (fileMissing ? `\`${fileMissing}\`` : " ") : undefined,
+        showMissing && file.missing
+          ? formatMissingLines(
+              formatFileUrl(file.filename),
+              file.missing,
+              showMissingMaxLength,
+              showMissingLinks
+            )
+          : undefined,
       ]);
     }
 
