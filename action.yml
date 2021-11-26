@@ -39,7 +39,7 @@ inputs:
     description: 'Crop missing line numbers strings that exceeds this length, provided as an integer.'
     required: false
     default: ''
-  show_missing_links:
+  link_missing_lines:
     description: 'Link missing line numbers.'
     required: false
     default: false

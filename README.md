@@ -75,7 +75,7 @@ Default is no crop.
 
 (Note: "&hellip;" is appended to a cropped string)
 
-### `show_missing_links`
+### `link_missing_lines`
 
 Link missing line numbers. Defaults to `false`.
 

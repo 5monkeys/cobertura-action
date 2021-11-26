@@ -552,7 +552,7 @@ _Minimum allowed coverage is \`100%\`_
   expect(
     markdownReport([dummyReport], commit, {
       showMissing: true,
-      showMissingLinks: true,
+      linkMissingLines: true,
       showMissingMaxLength: 200,
     })
   ).toBe(`<strong>${defaultReportName}</strong>
@@ -571,7 +571,7 @@ _Minimum allowed coverage is \`100%\`_
   expect(
     markdownReport([dummyReport], commit, {
       showMissing: true,
-      showMissingLinks: true,
+      linkMissingLines: true,
       showMissingMaxLength: 12,
     })
   ).toBe(`<strong>${defaultReportName}</strong>

@@ -41,8 +41,8 @@ async function action(payload) {
   showMissingMaxLength = showMissingMaxLength
     ? parseInt(showMissingMaxLength)
     : -1;
-  const showMissingLinks = JSON.parse(
-    core.getInput("show_missing_links", { required: false }) || "false"
+  const linkMissingLines = JSON.parse(
+    core.getInput("link_missing_lines", { required: false }) || "false"
   );
   const onlyChangedFiles = JSON.parse(
     core.getInput("only_changed_files", { required: true })
@@ -61,7 +61,7 @@ async function action(payload) {
     showClassNames,
     showMissing,
     showMissingMaxLength,
-    showMissingLinks,
+    linkMissingLines,
     filteredFiles: changedFiles,
     reportName,
   });
@@ -149,7 +149,7 @@ function markdownReport(reports, commit, options) {
     showClassNames = false,
     showMissing = false,
     showMissingMaxLength = -1,
-    showMissingLinks = false,
+    linkMissingLines = false,
     filteredFiles = null,
     reportName = "Coverage Report",
   } = options || {};
@@ -177,7 +177,7 @@ function markdownReport(reports, commit, options) {
               formatFileUrl(file.filename, commit),
               file.missing,
               showMissingMaxLength,
-              showMissingLinks
+              linkMissingLines
             )
           : undefined,
       ]);
