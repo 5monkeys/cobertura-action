@@ -560,8 +560,8 @@ _Minimum allowed coverage is \`100%\`_
 | File | Coverage |   | Missing |
 | - | :-: | :-: | :-: |
 | **All files** | \`77%\` | :x: |   |
-| \\_\\_init\\_\\_.py | \`80%\` | :x: | [\`24-26\`](https://github.com/someowner/somerepo/blob/undefined/__init__.py?plain=1#L24-L26) |
-| bar.py | \`75%\` | :x: | [\`23-24\`](https://github.com/someowner/somerepo/blob/undefined/bar.py?plain=1#L23-L24) [\`39-40\`](https://github.com/someowner/somerepo/blob/undefined/bar.py?plain=1#L39-L40) [\`50\`](https://github.com/someowner/somerepo/blob/undefined/bar.py?plain=1#L50) |
+| \\_\\_init\\_\\_.py | \`80%\` | :x: | [\`24-26\`](https://github.com/someowner/somerepo/blob/deadbeef/__init__.py?plain=1#L24-L26) |
+| bar.py | \`75%\` | :x: | [\`23-24\`](https://github.com/someowner/somerepo/blob/deadbeef/bar.py?plain=1#L23-L24) [\`39-40\`](https://github.com/someowner/somerepo/blob/deadbeef/bar.py?plain=1#L39-L40) [\`50\`](https://github.com/someowner/somerepo/blob/deadbeef/bar.py?plain=1#L50) |
 | foo.py | \`75%\` | :x: |   |
 
 _Minimum allowed coverage is \`100%\`_
@@ -579,8 +579,8 @@ _Minimum allowed coverage is \`100%\`_
 | File | Coverage |   | Missing |
 | - | :-: | :-: | :-: |
 | **All files** | \`77%\` | :x: |   |
-| \\_\\_init\\_\\_.py | \`80%\` | :x: | [\`24-26\`](https://github.com/someowner/somerepo/blob/undefined/__init__.py?plain=1#L24-L26) |
-| bar.py | \`75%\` | :x: | [\`23-24\`](https://github.com/someowner/somerepo/blob/undefined/bar.py?plain=1#L23-L24) [\`39-40\`](https://github.com/someowner/somerepo/blob/undefined/bar.py?plain=1#L39-L40) &hellip; |
+| \\_\\_init\\_\\_.py | \`80%\` | :x: | [\`24-26\`](https://github.com/someowner/somerepo/blob/deadbeef/__init__.py?plain=1#L24-L26) |
+| bar.py | \`75%\` | :x: | [\`23-24\`](https://github.com/someowner/somerepo/blob/deadbeef/bar.py?plain=1#L23-L24) [\`39-40\`](https://github.com/someowner/somerepo/blob/deadbeef/bar.py?plain=1#L39-L40) &hellip; |
 | foo.py | \`75%\` | :x: |   |
 
 _Minimum allowed coverage is \`100%\`_

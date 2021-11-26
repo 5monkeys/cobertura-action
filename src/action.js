@@ -85,10 +85,9 @@ async function action(payload) {
   }
 }
 
-function formatFileUrl(fileName) {
+function formatFileUrl(fileName, commit) {
   const repo = github.context.repo;
-  const sha = github.sha;
-  return `https://github.com/${repo.owner}/${repo.repo}/blob/${sha}/${fileName}`;
+  return `https://github.com/${repo.owner}/${repo.repo}/blob/${commit}/${fileName}`;
 }
 
 function formatRangeText([start, end]) {
@@ -175,7 +174,7 @@ function markdownReport(reports, commit, options) {
         status(fileTotal),
         showMissing && file.missing
           ? formatMissingLines(
-              formatFileUrl(file.filename),
+              formatFileUrl(file.filename, commit),
               file.missing,
               showMissingMaxLength,
               showMissingLinks
