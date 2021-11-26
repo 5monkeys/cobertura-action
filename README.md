@@ -77,7 +77,8 @@ Default is no crop.
 
 ### `link_missing_lines`
 
-Link missing line numbers. Defaults to `false`.
+Link missing line numbers. This only has an effect when `show_missing` is set to `true`.
+Defaults to `false`.
 
 ### `only_changed_files`
 
