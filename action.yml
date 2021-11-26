@@ -39,6 +39,10 @@ inputs:
     description: 'Crop missing line numbers strings that exceeds this length, provided as an integer.'
     required: false
     default: ''
+  show_missing_links:
+    description: 'Link missing line numbers.'
+    required: false
+    default: false
   only_changed_files:
     description: 'Only show coverage for changed files. (only if a PR is present)'
     required: true

@@ -73,7 +73,11 @@ Crop missing line numbers strings that exceeds this length, provided as an integ
 
 Default is no crop.
 
-(Note: "..." is appended to a cropped string)
+(Note: "&hellip;" is appended to a cropped string)
+
+### `show_missing_links`
+
+Link missing line numbers. Defaults to `false`.
 
 ### `only_changed_files`
 

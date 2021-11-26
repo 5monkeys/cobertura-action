@@ -41,6 +41,9 @@ async function action(payload) {
   showMissingMaxLength = showMissingMaxLength
     ? parseInt(showMissingMaxLength)
     : -1;
+  const showMissingLinks = JSON.parse(
+    core.getInput("show_missing_links", { required: false }) || "false"
+  );
   const onlyChangedFiles = JSON.parse(
     core.getInput("only_changed_files", { required: true })
   );
@@ -58,6 +61,7 @@ async function action(payload) {
     showClassNames,
     showMissing,
     showMissingMaxLength,
+    showMissingLinks,
     filteredFiles: changedFiles,
     reportName,
   });
