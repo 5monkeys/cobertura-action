@@ -80,6 +80,11 @@ Default is no crop.
 Link missing line numbers. This only has an effect when `show_missing` is set to `true`.
 Defaults to `false`.
 
+### `link_missing_lines_source_dir`
+
+Allows specifying a source directory for `link_missing_lines`, that will be inserted
+into the resulting URLs, in-between the commit hash and the file path.
+
 ### `only_changed_files`
 
 Only show coverage for changed files.

@@ -44,6 +44,10 @@ async function action(payload) {
   const linkMissingLines = JSON.parse(
     core.getInput("link_missing_lines", { required: false }) || "false"
   );
+  const linkMissingLinesSourceDir = JSON.parse(
+    core.getInput("link_missing_lines_source_dir", { required: false }) ||
+      "null"
+  );
   const onlyChangedFiles = JSON.parse(
     core.getInput("only_changed_files", { required: true })
   );
@@ -62,6 +66,7 @@ async function action(payload) {
     showMissing,
     showMissingMaxLength,
     linkMissingLines,
+    linkMissingLinesSourceDir,
     filteredFiles: changedFiles,
     reportName,
   });
@@ -85,9 +90,13 @@ async function action(payload) {
   }
 }
 
-function formatFileUrl(fileName, commit) {
+function formatFileUrl(sourceDir, fileName, commit) {
   const repo = github.context.repo;
-  return `https://github.com/${repo.owner}/${repo.repo}/blob/${commit}/${fileName}`;
+  sourceDir = sourceDir ? sourceDir : "";
+  // Strip leading and trailing slashes.
+  sourceDir = sourceDir.replace(/\/$/, "").replace(/^\//, "");
+  const path = (sourceDir ? `${sourceDir}/` : "") + fileName;
+  return `https://github.com/${repo.owner}/${repo.repo}/blob/${commit}/${path}`;
 }
 
 function formatRangeText([start, end]) {
@@ -150,6 +159,7 @@ function markdownReport(reports, commit, options) {
     showMissing = false,
     showMissingMaxLength = -1,
     linkMissingLines = false,
+    linkMissingLinesSourceDir = null,
     filteredFiles = null,
     reportName = "Coverage Report",
   } = options || {};
@@ -174,7 +184,7 @@ function markdownReport(reports, commit, options) {
         status(fileTotal),
         showMissing && file.missing
           ? formatMissingLines(
-              formatFileUrl(file.filename, commit),
+              formatFileUrl(linkMissingLinesSourceDir, file.filename, commit),
               file.missing,
               showMissingMaxLength,
               linkMissingLines
