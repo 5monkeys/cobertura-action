@@ -44,10 +44,8 @@ async function action(payload) {
   const linkMissingLines = JSON.parse(
     core.getInput("link_missing_lines", { required: false }) || "false"
   );
-  const linkMissingLinesSourceDir = JSON.parse(
-    core.getInput("link_missing_lines_source_dir", { required: false }) ||
-      "null"
-  );
+  const linkMissingLinesSourceDir =
+    core.getInput("link_missing_lines_source_dir", { required: false }) || null;
   const onlyChangedFiles = JSON.parse(
     core.getInput("only_changed_files", { required: true })
   );
