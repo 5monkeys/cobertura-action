@@ -324,6 +324,12 @@ async function pullRequestInfo(payload = {}) {
     commit = pullRequest.head.sha;
   } else if (payload.after) {
     commit = payload.after;
+  } else if (payload.ref) {
+    const { data } = await client.rest.git.getRef({
+      ref: payload.ref.slice("refs/".length),
+      ...github.context.repo,
+    });
+    commit = data.object.sha;
   }
 
   return { pullRequestNumber, commit };
