@@ -76,13 +76,9 @@ async function action(payload) {
   let reportTitle = reportName;
   // TODO: Figure out a good title for more than one report
   if (reports.length === 1) {
-    reportTitle = belowThreshold
-      ? `${Math.floor(
-          reports[0].total
-        )}% (actual) < ${minimumCoverage}% (expected)`
-      : `${Math.floor(
-          reports[0].total
-        )}% (actual) >= ${minimumCoverage}% (expected)`;
+    const _sign = belowThreshold ? "<" : ">="
+    const _actual = Math.floor(reports[0].total)
+    reportTitle = `Coverage: ${_actual}% (actual) ${_sign} ${minimumCoverage}% (expected)`;
   }
   if (pullRequestNumber) {
     await addComment(pullRequestNumber, comment, reportName);
