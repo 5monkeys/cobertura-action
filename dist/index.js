@@ -18231,8 +18231,12 @@ async function action(payload) {
   // TODO: Figure out a good title for more than one report
   if (reports.length === 1) {
     reportTitle = belowThreshold
-      ? `${Math.floor(reports[0].total)}% < ${minimumCoverage}%`
-      : `${Math.floor(reports[0].total)}% >= ${minimumCoverage}%`;
+      ? `${Math.floor(
+          reports[0].total
+        )}% (actual) < ${minimumCoverage}% (expected)`
+      : `${Math.floor(
+          reports[0].total
+        )}% (actual) >= ${minimumCoverage}% (expected)`;
   }
   if (pullRequestNumber) {
     await addComment(pullRequestNumber, comment, reportName);
