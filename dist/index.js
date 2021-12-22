@@ -18230,7 +18230,7 @@ async function action(payload) {
   let reportTitle = reportName;
   // TODO: Figure out a good title for more than one report
   if (reports.length === 1) {
-    belowThreshold
+    reportTitle = belowThreshold
       ? `${Math.floor(reports[0].total)}% < ${minimumCoverage}%`
       : `${Math.floor(reports[0].total)}% >= ${minimumCoverage}%`;
   }
