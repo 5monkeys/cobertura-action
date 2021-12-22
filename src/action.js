@@ -50,14 +50,16 @@ async function action(payload) {
     core.getInput("only_changed_files", { required: true })
   );
   const reportName =
-    core.getInput("report_name", { required: false }) || "Coverage";
+    core.getInput("report_name", { required: false }) || "Coverage Report";
+  const checkName =
+    core.getInput("check_name", { required: false }) || "coverage";
 
   const changedFiles = onlyChangedFiles
     ? await listChangedFiles(pullRequestNumber)
     : null;
 
   const reports = await processCoverage(path, { skipCovered });
-  const comment = markdownReport(reports, commit, {
+  const [checkBody, comment] = markdownReport(reports, commit, {
     minimumCoverage,
     showLine,
     showBranch,
@@ -76,16 +78,16 @@ async function action(payload) {
   let reportTitle = reportName;
   // TODO: Figure out a good title for more than one report
   if (reports.length === 1) {
-    const _sign = belowThreshold ? "<" : ">="
-    const _actual = Math.floor(reports[0].total)
+    const _sign = belowThreshold ? "<" : ">=";
+    const _actual = Math.floor(reports[0].total);
     reportTitle = `Coverage: ${_actual}% (actual) ${_sign} ${minimumCoverage}% (expected)`;
   }
   if (pullRequestNumber) {
     await addComment(pullRequestNumber, comment, reportName);
   }
   await addCheck(
-    reportName,
-    comment,
+    checkName,
+    checkBody,
     reportTitle,
     commit,
     failBelowThreshold ? (belowThreshold ? "failure" : "success") : "neutral"
@@ -174,6 +176,7 @@ function markdownReport(reports, commit, options) {
   // Setup files
   const files = [];
   let output = "";
+  let structuredOutput = "";
   for (const report of reports) {
     const folder = reports.length <= 1 ? "" : ` ${report.folder}`;
     for (const file of report.files.filter(
@@ -244,13 +247,14 @@ function markdownReport(reports, commit, options) {
         return `| ${row.filter(Boolean).join(" | ")} |`;
       })
       .join("\n");
-    const titleText = `<strong>${reportName}${folder}</strong>`;
+    const titleText = `<strong>${reportName}${folder} - ${total}%</strong>`;
     output += `${titleText}\n\n${table}\n\n`;
+    structuredOutput += `<details><summary>${titleText}</summary>\n\n${table}\n\n</details>\n\n`;
   }
   const minimumCoverageText = `_Minimum allowed coverage is \`${minimumCoverage}%\`_`;
   const footerText = `<p align="right">${credits} against ${commit} </p>`;
   output += `${minimumCoverageText}\n\n${footerText}`;
-  return output;
+  return [output, structuredOutput];
 }
 
 async function addComment(pullRequestNumber, body, reportName) {
@@ -258,9 +262,8 @@ async function addComment(pullRequestNumber, body, reportName) {
     issue_number: pullRequestNumber,
     ...github.context.repo,
   });
-  const commentFilter = reportName ? reportName : credits;
   const comment = comments.data.find((comment) =>
-    comment.body.includes(commentFilter)
+    comment.body.includes(reportName)
   );
   if (comment != null) {
     await client.rest.issues.updateComment({

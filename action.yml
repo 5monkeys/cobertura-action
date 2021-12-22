@@ -58,7 +58,11 @@ inputs:
   report_name:
     description: 'Use a unique name for the report and comment.'
     required: false
-    default: ''
+    default: 'Coverage Report'
+  check_name:
+    description: 'Use a unique name for the commit check name.'
+    required: false
+    default: 'coverage'
 runs:
   using: 'node12'
   main: 'dist/index.js'
