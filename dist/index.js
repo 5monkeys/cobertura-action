@@ -18203,7 +18203,8 @@ async function action(payload) {
   const onlyChangedFiles = JSON.parse(
     core.getInput("only_changed_files", { required: true })
   );
-  const reportName = core.getInput("report_name", { required: false });
+  const reportName =
+    core.getInput("report_name", { required: false }) || "Coverage";
 
   const changedFiles = onlyChangedFiles
     ? await listChangedFiles(pullRequestNumber)
@@ -18226,7 +18227,8 @@ async function action(payload) {
   const belowThreshold = reports.some(
     (report) => Math.floor(report.total) < minimumCoverage
   );
-  let reportTitle = reportName ? reportName : "coverage";
+  let reportTitle = reportName;
+  // TODO: Figure out a good title for more than one report
   if (reports.length === 1) {
     belowThreshold
       ? `${Math.floor(reports[0].total)}% < ${minimumCoverage}%`
@@ -18236,7 +18238,7 @@ async function action(payload) {
     await addComment(pullRequestNumber, comment, reportName);
   }
   await addCheck(
-    reportName ? reportName : "coverage",
+    reportName,
     comment,
     reportTitle,
     commit,
