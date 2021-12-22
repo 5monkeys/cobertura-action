@@ -18226,13 +18226,19 @@ async function action(payload) {
   const belowThreshold = reports.some(
     (report) => Math.floor(report.total) < minimumCoverage
   );
-
+  let reportTitle = reportName ? reportName : "coverage";
+  if (reports.length === 1) {
+    belowThreshold
+      ? `${Math.floor(reports[0].total)}% < ${minimumCoverage}%`
+      : `${Math.floor(reports[0].total)}% >= ${minimumCoverage}%`;
+  }
   if (pullRequestNumber) {
     await addComment(pullRequestNumber, comment, reportName);
   }
   await addCheck(
+    reportName ? reportName : "coverage",
     comment,
-    reportName,
+    reportTitle,
     commit,
     failBelowThreshold ? (belowThreshold ? "failure" : "success") : "neutral"
   );
@@ -18423,16 +18429,14 @@ async function addComment(pullRequestNumber, body, reportName) {
   }
 }
 
-async function addCheck(body, reportName, sha, conclusion) {
-  const checkName = reportName ? reportName : "coverage";
-
+async function addCheck(checkName, body, checkTitle, sha, conclusion) {
   await client.rest.checks.create({
     name: checkName,
     head_sha: sha,
     status: "completed",
     conclusion: conclusion,
     output: {
-      title: checkName,
+      title: checkTitle,
       summary: body,
     },
     ...github.context.repo,
