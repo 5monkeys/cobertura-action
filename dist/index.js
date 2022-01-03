@@ -18168,6 +18168,9 @@ async function action(payload) {
     core.error("Found no commit.");
     return;
   }
+  const pullRequestComment = JSON.parse(
+    core.getInput("pull_request_comment", { required: true })
+  );
 
   const path = core.getInput("path", { required: true });
   const skipCovered = JSON.parse(
@@ -18236,7 +18239,7 @@ async function action(payload) {
     const _actual = Math.floor(reports[0].total);
     reportTitle = `Coverage: ${_actual}% (actual) ${_sign} ${minimumCoverage}% (expected)`;
   }
-  if (pullRequestNumber) {
+  if (pullRequestNumber && pullRequestComment) {
     await addComment(pullRequestNumber, comment, reportName);
   }
   await addCheck(
