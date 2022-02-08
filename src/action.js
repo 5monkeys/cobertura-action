@@ -29,10 +29,6 @@ async function action(payload) {
   const failBelowThreshold = JSON.parse(
     core.getInput("fail_below_threshold", { required: false }) || "false"
   );
-  const minimumCoverageForEachFile = parseInt(
-    core.getInput("minimum_coverage_for_each_file", { required: false })
-  );
-
   const failForIndividualFileBelowThreshold = JSON.parse(
     core.getInput("fail_for_individual_file_below_threshold", {
       required: false,

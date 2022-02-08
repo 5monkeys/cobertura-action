@@ -49,7 +49,11 @@ The minimum allowed coverage percentage as an integer.
 
 ### `fail_below_threshold`
 
-Fail the action when the minimum coverage was not met.
+Fail the action when the minimum coverage is not met for the entire report.
+
+### `fail_for_individual_file_below_threshold`
+
+Fail the action when the specified minimum coverage is not met for any file.
 
 ### `show_line`
 
