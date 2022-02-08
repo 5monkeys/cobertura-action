@@ -29,6 +29,15 @@ async function action(payload) {
   const failBelowThreshold = JSON.parse(
     core.getInput("fail_below_threshold", { required: false }) || "false"
   );
+  const minimumCoverageForEachFile = parseInt(
+    core.getInput("minimum_coverage_for_each_file", { required: false })
+  );
+
+  const failForIndividualFileBelowThreshold = JSON.parse(
+    core.getInput("fail_for_individual_file_below_threshold", {
+      required: false,
+    }) || "false"
+  );
   const showClassNames = JSON.parse(
     core.getInput("show_class_names", { required: true })
   );
@@ -73,18 +82,36 @@ async function action(payload) {
     (report) => Math.floor(report.total) < minimumCoverage
   );
 
+  const belowThresholdForAnyFile = reports.some((report) => {
+    const allCoveragesInReport = report.files.map((r) => Math.floor(r.total));
+    const smallestCoverage = Math.min(...allCoveragesInReport);
+    return smallestCoverage < minimumCoverage;
+  });
+
   if (pullRequestNumber) {
     await addComment(pullRequestNumber, comment, reportName);
   }
-  await addCheck(
-    comment,
-    reportName,
-    commit,
-    failBelowThreshold ? (belowThreshold ? "failure" : "success") : "neutral"
-  );
+
+  let conclusion = "neutral";
+
+  if (failBelowThreshold) {
+    conclusion = belowThreshold ? "failure" : "success";
+  }
+
+  if (failForIndividualFileBelowThreshold) {
+    conclusion = belowThresholdForAnyFile ? "failure" : "success";
+  }
+
+  await addCheck(comment, reportName, commit, conclusion);
 
   if (failBelowThreshold && belowThreshold) {
     core.setFailed("Minimum coverage requirement was not satisfied");
+  }
+
+  if (failForIndividualFileBelowThreshold && belowThresholdForAnyFile) {
+    core.setFailed(
+      "Minimum coverage requirement was not satisfied for one or more files"
+    );
   }
 }
 

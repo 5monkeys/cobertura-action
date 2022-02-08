@@ -322,6 +322,78 @@ test("action not failing on coverage above threshold", async () => {
   expect(process.stdout.write).toHaveBeenCalledTimes(0);
 });
 
+test("action failing on coverage for a single file below threshold", async () => {
+  const { action } = require("./action");
+  const prNumber = 123;
+  process.env["INPUT_PATH"] = "./src/fixtures/test-branch.xml";
+  process.env["INPUT_SKIP_COVERED"] = "true";
+  process.env["INPUT_SHOW_BRANCH"] = "false";
+  process.env["INPUT_SHOW_LINE"] = "false";
+  process.env["INPUT_MINIMUM_COVERAGE"] = "70";
+  process.env["INPUT_FAIL_BELOW_THRESHOLD"] = "false";
+  process.env["INPUT_FAIL_FOR_INDIVIDUAL_FILE_BELOW_THRESHOLD"] = "true";
+  process.env["INPUT_SHOW_CLASS_NAMES"] = "false";
+  process.env["INPUT_SHOW_MISSING"] = "false";
+  process.env["INPUT_ONLY_CHANGED_FILES"] = "false";
+  process.env["INPUT_PULL_REQUEST_NUMBER"] = prNumber;
+  nock("https://api.github.com")
+    .post(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
+    .reply(200)
+    .get(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
+    .reply(200, [{ body: "some body", id: 123 }])
+    .get(`/repos/${owner}/${repo}/pulls/${prNumber}`)
+    .reply(200, {
+      head: {
+        sha: "deadbeef",
+      },
+    })
+    .post(`/repos/${owner}/${repo}/check-runs`)
+    .reply(200);
+
+  await action({
+    push: { ref: "master" },
+  });
+  expect(process.exitCode).toBe(1);
+  expect(process.stdout.write).toHaveBeenCalledTimes(1);
+  expect(process.stdout.write).toHaveBeenCalledWith(
+    "::error::Minimum coverage requirement was not satisfied for one or more files\n"
+  );
+});
+
+test("action not failing on coverage for all files above threshold", async () => {
+  const { action } = require("./action");
+  const prNumber = 123;
+  process.env["INPUT_PATH"] = "./src/fixtures/test-branch.xml";
+  process.env["INPUT_SKIP_COVERED"] = "true";
+  process.env["INPUT_SHOW_BRANCH"] = "false";
+  process.env["INPUT_SHOW_LINE"] = "false";
+  process.env["INPUT_MINIMUM_COVERAGE"] = "68";
+  process.env["INPUT_FAIL_BELOW_THRESHOLD"] = "false";
+  process.env["INPUT_FAIL_FOR_INDIVIDUAL_FILE_BELOW_THRESHOLD"] = "true";
+  process.env["INPUT_SHOW_CLASS_NAMES"] = "false";
+  process.env["INPUT_SHOW_MISSING"] = "false";
+  process.env["INPUT_ONLY_CHANGED_FILES"] = "false";
+  process.env["INPUT_PULL_REQUEST_NUMBER"] = prNumber;
+  nock("https://api.github.com")
+    .post(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
+    .reply(200)
+    .get(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
+    .reply(200, [{ body: "some body", id: 123 }])
+    .get(`/repos/${owner}/${repo}/pulls/${prNumber}`)
+    .reply(200, {
+      head: {
+        sha: "deadbeef",
+      },
+    })
+    .post(`/repos/${owner}/${repo}/check-runs`)
+    .reply(200);
+  await action({
+    push: { ref: "master" },
+  });
+  expect(process.exitCode).toBe(0);
+  expect(process.stdout.write).toHaveBeenCalledTimes(0);
+});
+
 test("markdownReport", () => {
   const { markdownReport } = require("./action");
   const commit = "deadbeef";
