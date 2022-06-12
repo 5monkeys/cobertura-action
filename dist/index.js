@@ -18204,12 +18204,18 @@ async function action(payload) {
     core.getInput("only_changed_files", { required: true })
   );
   const reportName = core.getInput("report_name", { required: false });
+  const normalizeAbsolutePaths = core.getBooleanInput(
+    "normalize_absolute_paths"
+  );
 
   const changedFiles = onlyChangedFiles
     ? await listChangedFiles(pullRequestNumber)
     : null;
 
-  const reports = await processCoverage(path, { skipCovered });
+  const reports = await processCoverage(path, {
+    skipCovered,
+    normalizeAbsolutePaths,
+  });
   const comment = markdownReport(reports, commit, {
     minimumCoverage,
     showLine,
@@ -18502,6 +18508,7 @@ const xml2js = __nccwpck_require__(6189);
 const util = __nccwpck_require__(1669);
 const glob = __nccwpck_require__(8252);
 const parseString = util.promisify(xml2js.parseString);
+const core = __nccwpck_require__(2186);
 
 /**
  * generate the report for the given file
@@ -18511,6 +18518,7 @@ const parseString = util.promisify(xml2js.parseString);
  * @return {Promise<{total: number, line: number, files: T[], branch: number}>}
  */
 async function readCoverageFromFile(path, options) {
+  core.info(`Reading file: ${path}`);
   const xml = await fs.readFile(path, "utf-8");
   const { coverage } = await parseString(xml, {
     explicitArray: false,
@@ -18523,7 +18531,7 @@ async function readCoverageFromFile(path, options) {
     .map((klass) => {
       return {
         ...calculateRates(klass),
-        filename: klass["filename"],
+        filename: trimFileName(klass["filename"], getWorkingDirectory(), options),
         name: klass["name"],
         missing: missingLines(klass),
       };
@@ -18533,6 +18541,30 @@ async function readCoverageFromFile(path, options) {
     ...calculateRates(coverage),
     files,
   };
+}
+
+function getWorkingDirectory() {
+  return process.env["GITHUB_WORKSPACE"] || process.cwd();
+}
+
+function trimFileName(fileName, workingDirectory, options) {
+  core.info(`workingDirectory: ${workingDirectory}; fileName: ${fileName}; normalize: ${options.normalizeAbsolutePaths}`);
+
+  if (!options.normalizeAbsolutePaths) {
+    return fileName;
+  }
+
+  if (fileName.indexOf(workingDirectory) === 0) {
+    var trimmedFilename = fileName.substring(workingDirectory.length);
+
+    if(trimmedFilename[0] === "/") {
+      return trimmedFilename.substring(1);
+    }
+
+    return trimmedFilename;
+  }
+
+  return fileName;
 }
 
 function trimFolder(path, positionOfFirstDiff) {
@@ -18553,7 +18585,7 @@ function trimFolder(path, positionOfFirstDiff) {
  * @returns {Promise<{total: number, folder: string, line: number, files: T[], branch: number}[]>}
  */
 async function processCoverage(path, options) {
-  options = options || { skipCovered: false };
+  options = options || { skipCovered: false, normalizePaths: false };
 
   const paths = glob.hasMagic(path) ? await glob(path) : [path];
   const positionOfFirstDiff = longestCommonPrefix(paths);
@@ -18695,6 +18727,7 @@ module.exports = {
   processCoverage,
   trimFolder,
   longestCommonPrefix,
+  trimFileName
 };
 
 

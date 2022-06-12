@@ -24,7 +24,7 @@ async function readCoverageFromFile(path, options) {
     .map((klass) => {
       return {
         ...calculateRates(klass),
-        filename: klass["filename"],
+        filename: trimFileName(klass["filename"], getWorkingDirectory(), options),
         name: klass["name"],
         missing: missingLines(klass),
       };
@@ -34,6 +34,28 @@ async function readCoverageFromFile(path, options) {
     ...calculateRates(coverage),
     files,
   };
+}
+
+function getWorkingDirectory() {
+  return process.env["GITHUB_WORKSPACE"] || process.cwd();
+}
+
+function trimFileName(fileName, workingDirectory, options) {
+  if (!options.normalizeAbsolutePaths) {
+    return fileName;
+  }
+
+  if (fileName.indexOf(workingDirectory) === 0) {
+    var trimmedFilename = fileName.substring(workingDirectory.length);
+
+    if(trimmedFilename[0] === "/") {
+      return trimmedFilename.substring(1);
+    }
+
+    return trimmedFilename;
+  }
+
+  return fileName;
 }
 
 function trimFolder(path, positionOfFirstDiff) {
@@ -54,7 +76,7 @@ function trimFolder(path, positionOfFirstDiff) {
  * @returns {Promise<{total: number, folder: string, line: number, files: T[], branch: number}[]>}
  */
 async function processCoverage(path, options) {
-  options = options || { skipCovered: false };
+  options = options || { skipCovered: false, normalizePaths: false };
 
   const paths = glob.hasMagic(path) ? await glob(path) : [path];
   const positionOfFirstDiff = longestCommonPrefix(paths);
@@ -196,4 +218,5 @@ module.exports = {
   processCoverage,
   trimFolder,
   longestCommonPrefix,
+  trimFileName
 };

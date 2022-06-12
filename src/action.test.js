@@ -41,6 +41,7 @@ const dummyReport = {
 beforeEach(() => {
   process.env["INPUT_REPO_TOKEN"] = "hunter2";
   process.env["GITHUB_REPOSITORY"] = `${owner}/${repo}`;
+  process.env["INPUT_NORMALIZE_ABSOLUTE_PATHS"] = "false"
   process.exitCode = 0;
   process.stdout.write = jest.fn();
 });

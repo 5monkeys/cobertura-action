@@ -99,6 +99,11 @@ Pull request number associated with the report. This property should be used whe
 
 If no pull request can determine the action will skip adding the comment.
 
+### `normalize_absolute_paths`
+Will convert absolute paths in the test reports to paths relative to the workflow's working directory.
+
+Defaults to true.
+
 ## Example usage
 
 ```yaml

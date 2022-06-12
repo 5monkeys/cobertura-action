@@ -50,12 +50,18 @@ async function action(payload) {
     core.getInput("only_changed_files", { required: true })
   );
   const reportName = core.getInput("report_name", { required: false });
+  const normalizeAbsolutePaths = core.getBooleanInput(
+    "normalize_absolute_paths"
+  );
 
   const changedFiles = onlyChangedFiles
     ? await listChangedFiles(pullRequestNumber)
     : null;
 
-  const reports = await processCoverage(path, { skipCovered });
+  const reports = await processCoverage(path, {
+    skipCovered,
+    normalizeAbsolutePaths,
+  });
   const comment = markdownReport(reports, commit, {
     minimumCoverage,
     showLine,

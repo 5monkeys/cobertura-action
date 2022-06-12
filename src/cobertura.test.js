@@ -2,6 +2,7 @@ const {
   processCoverage,
   trimFolder,
   longestCommonPrefix,
+  trimFileName,
 } = require("./cobertura");
 
 test("multiple files", async () => {
@@ -270,4 +271,24 @@ test("trimFolder", () => {
 test("longestCommonPrefix", () => {
   expect(longestCommonPrefix(null)).toBe(0);
   expect(longestCommonPrefix([])).toBe(0);
+});
+
+test("TrimFileName with option normalizeAbsolutePaths = false", () => {
+  const fileName = "C:/testFolder/test.js";
+  expect(trimFileName(fileName, "C:/testFolder", {normalizeAbsolutePaths: false})).toBe(fileName);
+});
+
+test("TrimFileName with working directory without trailing slash", () => {
+  const fileName = "C:/testFolder/test.js";
+  expect(trimFileName(fileName, "C:/testFolder", {normalizeAbsolutePaths: true})).toBe("test.js");
+});
+
+test("TrimFileName with working directory with trailing slash", () => {
+  const fileName = "C:/testFolder/test.js";
+  expect(trimFileName(fileName, "C:/testFolder/", {normalizeAbsolutePaths: true})).toBe("test.js");
+});
+
+test("TrimFileName with repeated working directory only removes first match", () => {
+  const fileName = "/TestFolder/TestFolder/test.js";
+  expect(trimFileName(fileName, "/TestFolder/", {normalizeAbsolutePaths: true})).toBe("TestFolder/test.js");
 });
