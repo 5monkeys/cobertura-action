@@ -8,5 +8,9 @@
   },
   "parserOptions": {
     "ecmaVersion": 2018
+  },
+  "error":
+  {
+    "endOfLine": "auto"
   }
 }
