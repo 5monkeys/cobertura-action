@@ -53,6 +53,7 @@ async function action(payload) {
   const normalizeAbsolutePaths = core.getBooleanInput(
     "normalize_absolute_paths"
   );
+  const prependSourceFolder = core.getBooleanInput("prepend_source_folder")
 
   const changedFiles = onlyChangedFiles
     ? await listChangedFiles(pullRequestNumber)
@@ -73,6 +74,7 @@ async function action(payload) {
     linkMissingLinesSourceDir,
     filteredFiles: changedFiles,
     reportName,
+    prependSourceFolder
   });
 
   const belowThreshold = reports.some(

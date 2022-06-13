@@ -275,20 +275,50 @@ test("longestCommonPrefix", () => {
 
 test("TrimFileName with option normalizeAbsolutePaths = false", () => {
   const fileName = "C:/testFolder/test.js";
-  expect(trimFileName(fileName, "C:/testFolder", {normalizeAbsolutePaths: false})).toBe(fileName);
+  expect(
+    trimFileName(fileName, "C:/testFolder", { normalizeAbsolutePaths: false })
+  ).toBe(fileName);
 });
 
 test("TrimFileName with working directory without trailing slash", () => {
   const fileName = "C:/testFolder/test.js";
-  expect(trimFileName(fileName, "C:/testFolder", {normalizeAbsolutePaths: true})).toBe("test.js");
+  expect(
+    trimFileName(fileName, "C:/testFolder", { normalizeAbsolutePaths: true })
+  ).toBe("test.js");
 });
 
 test("TrimFileName with working directory with trailing slash", () => {
   const fileName = "C:/testFolder/test.js";
-  expect(trimFileName(fileName, "C:/testFolder/", {normalizeAbsolutePaths: true})).toBe("test.js");
+  expect(
+    trimFileName(fileName, "C:/testFolder/", { normalizeAbsolutePaths: true })
+  ).toBe("test.js");
 });
 
 test("TrimFileName with repeated working directory only removes first match", () => {
   const fileName = "/TestFolder/TestFolder/test.js";
-  expect(trimFileName(fileName, "/TestFolder/", {normalizeAbsolutePaths: true})).toBe("TestFolder/test.js");
+  expect(
+    trimFileName(fileName, "/TestFolder/", { normalizeAbsolutePaths: true })
+  ).toBe("TestFolder/test.js");
+});
+
+test("processCoverage(test-missing-lines.xml, {skipCovered: false, normalizeAbsolutePaths: false, prependSourceFolder: true})", async () => {
+  const reports = await processCoverage("./src/fixtures/test-branch.xml", {skipCovered: false, normalizeAbsolutePaths: false, prependSourceFolder: true});
+
+  for (const file of reports[0].files) {
+    expect(file.filename).toMatch(
+      "C:\\local\\mvn-coverage-example\\src\\main\\java"
+    );
+  }
+});
+
+test("processCoverage(test-missing-lines.xml, {skipCovered: false, normalizeAbsolutePaths: true, prependSourceFolder: true})", async () => {
+  process.env.GITHUB_WORKSPACE = 'C:\\local\\mvn-coverage-example\\';
+  const reports = await processCoverage("./src/fixtures/test-branch.xml", {skipCovered: false, normalizeAbsolutePaths: true, prependSourceFolder: true});
+  process.env.GITHUB_WORKSPACE = undefined;
+
+  for (const file of reports[0].files) {
+    expect(file.filename).toMatch(
+      /^src\\main\\java/
+    );
+  }
 });

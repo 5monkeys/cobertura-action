@@ -104,6 +104,11 @@ Will convert absolute paths in the test reports to paths relative to the workflo
 
 Defaults to true.
 
+### `prepend_source_folder`
+Prepends the first source element to all classes in the same test report. 
+
+Defaults to true.
+
 ## Example usage
 
 ```yaml

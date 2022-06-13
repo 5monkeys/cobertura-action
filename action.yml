@@ -60,7 +60,11 @@ inputs:
     required: false
     default: ''
   normalize_absolute_paths:
-    description: 'Transform absolute paths of tests to relative paths to allow for linking against files in the repository'
+    description: 'Transform absolute paths of tests to relative paths to allow for linking against files in the repository.'
+    required: false
+    default: true
+  prepend_source_folder:
+    description: 'Prepends the source folder element to class path.'
     required: false
     default: true
 runs:

@@ -3,6 +3,7 @@ const xml2js = require("xml2js");
 const util = require("util");
 const glob = require("glob-promise");
 const parseString = util.promisify(xml2js.parseString);
+const path = require('path');
 
 /**
  * generate the report for the given file
@@ -19,12 +20,13 @@ async function readCoverageFromFile(path, options) {
   });
   const { packages } = coverage;
   const classes = processPackages(packages);
+
   const files = classes
     .filter(Boolean)
     .map((klass) => {
       return {
         ...calculateRates(klass),
-        filename: trimFileName(klass["filename"], getWorkingDirectory(), options),
+        filename: processFilename(klass, coverage, options),
         name: klass["name"],
         missing: missingLines(klass),
       };
@@ -34,6 +36,21 @@ async function readCoverageFromFile(path, options) {
     ...calculateRates(coverage),
     files,
   };
+}
+
+function processFilename(classCoverage, coverage, options) {
+  let fileName = classCoverage["filename"];
+
+  if (options.prependSourceFolder && !path.isAbsolute(fileName)) {
+    const pathPrefix = getPathPrefix(coverage);
+    fileName = path.join(pathPrefix,fileName);
+  }
+
+  return trimFileName(
+    fileName,
+    getWorkingDirectory(),
+    options
+  );
 }
 
 function getWorkingDirectory() {
@@ -48,7 +65,7 @@ function trimFileName(fileName, workingDirectory, options) {
   if (fileName.indexOf(workingDirectory) === 0) {
     var trimmedFilename = fileName.substring(workingDirectory.length);
 
-    if(trimmedFilename[0] === "/") {
+    if (trimmedFilename[0] === "/") {
       return trimmedFilename.substring(1);
     }
 
@@ -56,6 +73,14 @@ function trimFileName(fileName, workingDirectory, options) {
   }
 
   return fileName;
+}
+
+function getPathPrefix(coverage) {
+  if (coverage.sources && coverage.sources.source instanceof Array) {
+    return coverage.sources.source[0];
+  }
+
+  return coverage.sources.source || "";
 }
 
 function trimFolder(path, positionOfFirstDiff) {
@@ -218,5 +243,5 @@ module.exports = {
   processCoverage,
   trimFolder,
   longestCommonPrefix,
-  trimFileName
+  trimFileName,
 };
