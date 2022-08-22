@@ -31,9 +31,9 @@ The check will succeed or fail based on your threshold when `fail_below_threshol
 
 ## Inputs
 
-### `repo_token` **Required**
+### `repo_token`
 
-The GITHUB_TOKEN. See [details](https://help.github.com/en/articles/virtual-environments-for-github-actions#github_token-secret).
+The GITHUB_TOKEN. Defaults to `${{github.token}}`
 
 ### `path`
 
@@ -114,7 +114,6 @@ jobs:
       - uses: 5monkeys/cobertura-action@master
         with:
           path: src/test.xml
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
           minimum_coverage: 75
 ```
 
