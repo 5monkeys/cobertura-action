@@ -39,6 +39,10 @@ The GITHUB_TOKEN. Defaults to `${{github.token}}`
 
 The path to the cobertura report. Defaults to `coverage.xml`. Glob pattern is supported, for example `coverage/*.xml`.
 
+## `prefix_path`
+
+This prefix is added to every `filename` within the cobertura report. This can resolve issues with `link_missing_lines` URLs and `only_changed_files`.
+
 ### `skip_covered`
 
 If files with 100% coverage should be ignored. Defaults to `true`.

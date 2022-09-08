@@ -16,6 +16,10 @@ async function action(payload) {
   }
 
   const path = core.getInput("path", { required: true });
+  const prefixPath =
+    core.getInput("prefix_path", { required: false }) ||
+    core.getInput("link_missing_lines_source_dir", { required: false }) ||
+    undefined;
   const skipCovered = JSON.parse(
     core.getInput("skip_covered", { required: true })
   );
@@ -53,7 +57,7 @@ async function action(payload) {
     ? await listChangedFiles(pullRequestNumber)
     : null;
 
-  const reports = await processCoverage(path, { skipCovered });
+  const reports = await processCoverage(path, { skipCovered, prefixPath });
   const comment = markdownReport(reports, commit, {
     minimumCoverage,
     showLine,

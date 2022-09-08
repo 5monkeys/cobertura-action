@@ -271,3 +271,13 @@ test("longestCommonPrefix", () => {
   expect(longestCommonPrefix(null)).toBe(0);
   expect(longestCommonPrefix([])).toBe(0);
 });
+
+test("processCoverage(test-prefix.xml, {prefixPath: 'somethingrandom/'})", async () => {
+  const reports = await processCoverage("./src/fixtures/test-istanbul.xml", {
+    prefixPath: "somethingrandom/",
+    skipCovered: false,
+  });
+
+  const files = reports[0].files;
+  expect(files[0].filename).toBe("somethingrandom/src/action.js");
+});

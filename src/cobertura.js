@@ -24,7 +24,7 @@ async function readCoverageFromFile(path, options) {
     .map((klass) => {
       return {
         ...calculateRates(klass),
-        filename: klass["filename"],
+        filename: (options.prefixPath || "") + klass["filename"],
         name: klass["name"],
         missing: missingLines(klass),
       };
