@@ -18497,6 +18497,7 @@ const fs = __nccwpck_require__(5747).promises;
 const xml2js = __nccwpck_require__(6189);
 const util = __nccwpck_require__(1669);
 const glob = __nccwpck_require__(8252);
+const pathLib = __nccwpck_require__(5622);
 const parseString = util.promisify(xml2js.parseString);
 
 /**
@@ -18519,7 +18520,10 @@ async function readCoverageFromFile(path, options) {
     .map((klass) => {
       return {
         ...calculateRates(klass),
-        filename: (options.prefixPath || "") + klass["filename"],
+        filename:
+          options.prefixPath != null
+            ? pathLib.join(options.prefixPath, klass["filename"])
+            : klass["filename"],
         name: klass["name"],
         missing: missingLines(klass),
       };
