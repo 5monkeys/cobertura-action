@@ -9,6 +9,10 @@ inputs:
     description: 'Path to the cobertura file.'
     required: true
     default: 'coverage.xml'
+  prefix_path:
+    description: 'Prefix path to add to each filename.'
+    required: false
+    default: ''
   skip_covered:
     description: 'If files with 100% should be skipped from report.'
     required: true
@@ -48,6 +52,7 @@ inputs:
     description: 'Source directory used for link_missing_lines.'
     required: false
     default: ''
+    deprecationMessage: 'Please switch to prefix_path instead (this input is forward to prefix_path).'
   only_changed_files:
     description: 'Only show coverage for changed files. (only if a PR is present)'
     required: true
