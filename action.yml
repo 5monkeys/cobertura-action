@@ -44,10 +44,6 @@ inputs:
     description: 'Link missing line numbers.'
     required: false
     default: false
-  link_missing_lines_source_dir:
-    description: 'Source directory used for link_missing_lines.'
-    required: false
-    default: ''
   only_changed_files:
     description: 'Only show coverage for changed files. (only if a PR is present)'
     required: true
