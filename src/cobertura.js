@@ -2,6 +2,7 @@ const fs = require("fs").promises;
 const xml2js = require("xml2js");
 const util = require("util");
 const glob = require("glob-promise");
+const pathLib = require("path");
 const parseString = util.promisify(xml2js.parseString);
 
 /**
@@ -24,7 +25,10 @@ async function readCoverageFromFile(path, options) {
     .map((klass) => {
       return {
         ...calculateRates(klass),
-        filename: klass["filename"],
+        filename:
+          options.prefixPath != null
+            ? pathLib.join(options.prefixPath, klass["filename"])
+            : klass["filename"],
         name: klass["name"],
         missing: missingLines(klass),
       };

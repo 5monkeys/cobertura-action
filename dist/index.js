@@ -18170,6 +18170,10 @@ async function action(payload) {
   }
 
   const path = core.getInput("path", { required: true });
+  const prefixPath =
+    core.getInput("prefix_path", { required: false }) ||
+    core.getInput("link_missing_lines_source_dir", { required: false }) ||
+    undefined;
   const skipCovered = JSON.parse(
     core.getInput("skip_covered", { required: true })
   );
@@ -18198,8 +18202,6 @@ async function action(payload) {
   const linkMissingLines = JSON.parse(
     core.getInput("link_missing_lines", { required: false }) || "false"
   );
-  const linkMissingLinesSourceDir =
-    core.getInput("link_missing_lines_source_dir", { required: false }) || null;
   const onlyChangedFiles = JSON.parse(
     core.getInput("only_changed_files", { required: true })
   );
@@ -18209,7 +18211,7 @@ async function action(payload) {
     ? await listChangedFiles(pullRequestNumber)
     : null;
 
-  const reports = await processCoverage(path, { skipCovered });
+  const reports = await processCoverage(path, { skipCovered, prefixPath });
   const comment = markdownReport(reports, commit, {
     minimumCoverage,
     showLine,
@@ -18218,7 +18220,6 @@ async function action(payload) {
     showMissing,
     showMissingMaxLength,
     linkMissingLines,
-    linkMissingLinesSourceDir,
     filteredFiles: changedFiles,
     reportName,
   });
@@ -18242,13 +18243,9 @@ async function action(payload) {
   }
 }
 
-function formatFileUrl(sourceDir, fileName, commit) {
+function formatFileUrl(fileName, commit) {
   const repo = github.context.repo;
-  sourceDir = sourceDir ? sourceDir : "";
-  // Strip leading and trailing slashes.
-  sourceDir = sourceDir.replace(/\/$/, "").replace(/^\//, "");
-  const path = (sourceDir ? `${sourceDir}/` : "") + fileName;
-  return `https://github.com/${repo.owner}/${repo.repo}/blob/${commit}/${path}`;
+  return `https://github.com/${repo.owner}/${repo.repo}/blob/${commit}/${fileName}`;
 }
 
 function formatRangeText([start, end]) {
@@ -18311,7 +18308,6 @@ function markdownReport(reports, commit, options) {
     showMissing = false,
     showMissingMaxLength = -1,
     linkMissingLines = false,
-    linkMissingLinesSourceDir = null,
     filteredFiles = null,
     reportName = "Coverage Report",
   } = options || {};
@@ -18336,7 +18332,7 @@ function markdownReport(reports, commit, options) {
         status(fileTotal),
         showMissing && file.missing
           ? formatMissingLines(
-              formatFileUrl(linkMissingLinesSourceDir, file.filename, commit),
+              formatFileUrl(file.filename, commit),
               file.missing,
               showMissingMaxLength,
               linkMissingLines
@@ -18501,6 +18497,7 @@ const fs = __nccwpck_require__(5747).promises;
 const xml2js = __nccwpck_require__(6189);
 const util = __nccwpck_require__(1669);
 const glob = __nccwpck_require__(8252);
+const pathLib = __nccwpck_require__(5622);
 const parseString = util.promisify(xml2js.parseString);
 
 /**
@@ -18523,7 +18520,10 @@ async function readCoverageFromFile(path, options) {
     .map((klass) => {
       return {
         ...calculateRates(klass),
-        filename: klass["filename"],
+        filename:
+          options.prefixPath != null
+            ? pathLib.join(options.prefixPath, klass["filename"])
+            : klass["filename"],
         name: klass["name"],
         missing: missingLines(klass),
       };
