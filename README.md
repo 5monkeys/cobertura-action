@@ -49,7 +49,7 @@ The minimum allowed coverage percentage as an integer.
 
 ### `fail_below_threshold`
 
-Fail the action when the minimum coverage was not met.
+Fail the action when the minimum coverage was not met. Defaults to `false`.
 
 ### `show_line`
 
