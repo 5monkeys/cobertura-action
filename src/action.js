@@ -50,6 +50,9 @@ async function action(payload) {
     core.getInput("only_changed_files", { required: true })
   );
   const reportName = core.getInput("report_name", { required: false });
+  const collapseCoverage = JSON.parse(
+    core.getInput("collapse_coverage", { required: false }) || "false"
+  );
 
   const changedFiles = onlyChangedFiles
     ? await listChangedFiles(pullRequestNumber)
@@ -67,6 +70,7 @@ async function action(payload) {
     linkMissingLinesSourceDir,
     filteredFiles: changedFiles,
     reportName,
+    collapseCoverage,
   });
 
   const belowThreshold = reports.some(

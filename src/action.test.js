@@ -194,7 +194,7 @@ test("action only changes", async () => {
   await action();
 });
 
-test("action", async () => {
+test("action collapses coverage", async () => {
   const { action } = require("./action");
   process.env["INPUT_PATH"] = "./src/fixtures/test-branch.xml";
   process.env["INPUT_SKIP_COVERED"] = "true";
