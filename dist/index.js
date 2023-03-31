@@ -19392,6 +19392,9 @@ async function action(payload) {
     core.getInput("only_changed_files", { required: true })
   );
   const reportName = core.getInput("report_name", { required: false });
+  const collapseCoverage = JSON.parse(
+    core.getInput("collapse_coverage", { required: false }) || "false"
+  );
 
   const changedFiles = onlyChangedFiles
     ? await listChangedFiles(pullRequestNumber)
@@ -19409,6 +19412,7 @@ async function action(payload) {
     linkMissingLinesSourceDir,
     filteredFiles: changedFiles,
     reportName,
+    collapseCoverage,
   });
 
   const belowThreshold = reports.some(
@@ -19501,6 +19505,7 @@ function markdownReport(reports, commit, options) {
     linkMissingLines = false,
     linkMissingLinesSourceDir = null,
     filteredFiles = null,
+    collapseCoverage = false,
     reportName = "Coverage Report",
   } = options || {};
   const status = (total) =>
@@ -19579,7 +19584,11 @@ function markdownReport(reports, commit, options) {
       })
       .join("\n");
     const titleText = `<strong>${reportName}${folder}</strong>`;
-    output += `${titleText}\n\n${table}\n\n`;
+    if (collapseCoverage === false) {
+      output += `${titleText}\n\n${table}\n\n`;
+    } else {
+      output += `${titleText}\n\n<details>\n<summary>All files ${total}%</summary>\n${table}\n</details>\n\n`;
+    }
   }
   const minimumCoverageText = `_Minimum allowed coverage is \`${minimumCoverage}%\`_`;
   const footerText = `<p align="right">${credits} against ${commit} </p>`;
