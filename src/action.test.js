@@ -207,8 +207,9 @@ test("action collapses coverage", async () => {
   process.env["INPUT_PULL_REQUEST_NUMBER"] = "";
   process.env["INPUT_COLLAPSE_COVERAGE"] = "true";
   const prNumber = 1;
+  expectedBody = /<details>\\n<summary>All files 82%<\/summary>/;
   nock("https://api.github.com")
-    .post(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
+    .post(`/repos/${owner}/${repo}/issues/${prNumber}/comments`, expectedBody)
     .reply(200)
     .get(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
     .reply(200, [{ body: "some body", id: 123 }])
