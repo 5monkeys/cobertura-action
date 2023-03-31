@@ -52,8 +52,8 @@ inputs:
     description: 'Only show coverage for changed files. (only if a PR is present)'
     required: true
     default: false
-  only_summary:
-    description: 'Show only the summary with aggregated coverage for all files, skip coverage breakdown per file.'
+  collapse_coverage:
+    description: 'Collapses coverage report into <details>'
     required: true
     default: "false"
   pull_request_number:

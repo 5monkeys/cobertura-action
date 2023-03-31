@@ -89,9 +89,9 @@ into the resulting URLs, in-between the commit hash and the file path.
 
 Only show coverage for changed files.
 
-### `only_summary`
+### `collapse_coverage`
 
-Show only the summary with aggregated coverage for all files, skip coverage breakdown per file.
+Collapses coverage report into `<details>`, [supported](https://github.github.com/gfm/#html-blocks) by GitHub
 
 ### `report_name`
 
