@@ -89,6 +89,10 @@ into the resulting URLs, in-between the commit hash and the file path.
 
 Only show coverage for changed files.
 
+### `only_summary`
+
+Show only the summary with aggregated coverage for all files, skip coverage breakdown per file.
+
 ### `report_name`
 
 Use a unique name for the report and comment.
