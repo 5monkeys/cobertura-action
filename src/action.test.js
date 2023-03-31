@@ -194,6 +194,32 @@ test("action only changes", async () => {
   await action();
 });
 
+test("action", async () => {
+  const { action } = require("./action");
+  process.env["INPUT_PATH"] = "./src/fixtures/test-branch.xml";
+  process.env["INPUT_SKIP_COVERED"] = "true";
+  process.env["INPUT_SHOW_BRANCH"] = "false";
+  process.env["INPUT_SHOW_LINE"] = "false";
+  process.env["INPUT_MINIMUM_COVERAGE"] = "100";
+  process.env["INPUT_SHOW_CLASS_NAMES"] = "false";
+  process.env["INPUT_SHOW_MISSING"] = "false";
+  process.env["INPUT_ONLY_CHANGED_FILES"] = "false";
+  process.env["INPUT_PULL_REQUEST_NUMBER"] = "";
+  process.env["INPUT_COLLAPSE_COVERAGE"] = "true";
+  const prNumber = 1;
+  nock("https://api.github.com")
+    .post(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
+    .reply(200)
+    .get(`/repos/${owner}/${repo}/issues/${prNumber}/comments`)
+    .reply(200, [{ body: "some body", id: 123 }])
+    .post(`/repos/${owner}/${repo}/check-runs`)
+    .reply(200);
+  await action({
+    pull_request: { number: prNumber, head: { sha: "deadbeef" } },
+  });
+  await action();
+});
+
 test("action with report name", async () => {
   const { action } = require("./action");
   process.env["INPUT_PATH"] = "./src/fixtures/test-branch.xml";
