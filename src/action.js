@@ -164,9 +164,10 @@ function markdownReport(reports, commit, options) {
   const status = (total) =>
     total >= minimumCoverage ? ":white_check_mark:" : ":x:";
   // Setup files
-  const files = [];
+  
   let output = "";
   for (const report of reports) {
+    const files = [];
     const folder = reports.length <= 1 ? "" : ` ${report.folder}`;
     for (const file of report.files.filter(
       (file) => filteredFiles == null || filteredFiles.includes(file.filename)
