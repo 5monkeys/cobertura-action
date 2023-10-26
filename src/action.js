@@ -10,6 +10,11 @@ const credits = "Results for commit";
 
 async function action(payload) {
   const { pullRequestNumber, commit } = await pullRequestInfo(payload);
+  if (!commit) {
+    core.error("Found no commit.");
+    return;
+  }
+
   const path = core.getInput("path", { required: true });
   const skipCovered = JSON.parse(
     core.getInput("skip_covered", { required: true })
@@ -42,6 +47,11 @@ async function action(payload) {
   showMissingMaxLength = showMissingMaxLength
     ? parseInt(showMissingMaxLength)
     : -1;
+  const linkMissingLines = JSON.parse(
+    core.getInput("link_missing_lines", { required: false }) || "false"
+  );
+  const linkMissingLinesSourceDir =
+    core.getInput("link_missing_lines_source_dir", { required: false }) || null;
   const onlyChangedFiles = JSON.parse(
     core.getInput("only_changed_files", { required: true })
   );
@@ -68,28 +78,98 @@ async function action(payload) {
     });
   }
 
-  if (pullRequestNumber && commit) {
-    const comment = markdownReport(reports, commit, {
-      minimumCoverage,
-      showLine,
-      showBranch,
-      showClassNames,
-      showMissing,
-      showMissingMaxLength,
-      filteredFiles: changedFiles,
-      reportName,
-      onlySummary,
-    });
+  const comment = markdownReport(reports, commit, {
+    minimumCoverage,
+    showLine,
+    showBranch,
+    showClassNames,
+    showMissing,
+    showMissingMaxLength,
+    linkMissingLines,
+    linkMissingLinesSourceDir,
+    filteredFiles: changedFiles,
+    reportName,
+    onlySummary,
+  });
+
+  const belowThreshold = reports.some(
+    (report) => Math.floor(report.total) < minimumCoverage
+  );
+
+  if (pullRequestNumber) {
     await addComment(pullRequestNumber, comment, reportName);
-  } else {
-    core.info("Found no pull request, skipping coverage comment.");
   }
 
-  if (failBelowThreshold) {
-    if (reports.some((report) => Math.floor(report.total) < minimumCoverage)) {
-      core.setFailed("Minimum coverage requirement was not satisfied");
-    }
+  await addCheck(
+    comment,
+    reportName,
+    commit,
+    failBelowThreshold ? (belowThreshold ? "failure" : "success") : "neutral"
+  );
+
+  if (failBelowThreshold && belowThreshold) {
+    core.setFailed("Minimum coverage requirement was not satisfied");
   }
+}
+
+function formatFileUrl(sourceDir, fileName, commit) {
+  const repo = github.context.repo;
+  sourceDir = sourceDir ? sourceDir : "";
+  // Strip leading and trailing slashes.
+  sourceDir = sourceDir.replace(/\/$/, "").replace(/^\//, "");
+  const path = (sourceDir ? `${sourceDir}/` : "") + fileName;
+  return `https://github.com/${repo.owner}/${repo.repo}/blob/${commit}/${path}`;
+}
+
+function formatRangeText([start, end]) {
+  return `${start}` + (start === end ? "" : `-${end}`);
+}
+
+function tickWrap(string) {
+  return "`" + string + "`";
+}
+
+function cropRangeList(separator, showMissingMaxLength, ranges) {
+  if (showMissingMaxLength <= 0) return [ranges, false];
+  let accumulatedJoin = "";
+  for (const [index, range] of ranges.entries()) {
+    accumulatedJoin += `${separator}${range}`;
+    if (index === 0) continue;
+    if (accumulatedJoin.length > showMissingMaxLength)
+      return [ranges.slice(0, index), true];
+  }
+  return [ranges, false];
+}
+
+function linkRange(fileUrl, range) {
+  const [start, end] = range.slice(1, -1).split("-", 2);
+  const rangeReference = `L${start}` + (end ? `-L${end}` : "");
+  // Insert plain=1 to disabled rendered views.
+  const url = `${fileUrl}?plain=1#${rangeReference}`;
+  return `[${range}](${url})`;
+}
+
+function formatMissingLines(
+  fileUrl,
+  lineRanges,
+  showMissingMaxLength,
+  showMissingLineLinks
+) {
+  const formatted = lineRanges.map(formatRangeText);
+  const separator = " ";
+  // Apply cropping before inserting ticks and linking, so that only non-syntax
+  // characters are counted.
+  const [cropped, isCropped] = cropRangeList(
+    separator,
+    showMissingMaxLength,
+    formatted
+  );
+  const wrapped = cropped.map(tickWrap);
+  const linked = showMissingLineLinks
+    ? wrapped.map((range) => linkRange(fileUrl, range))
+    : wrapped;
+  const joined = linked.join(separator) + (isCropped ? " &hellip;" : "");
+  return joined || " ";
 }
 
 function markdownReport(reports, commit, options) {
@@ -100,14 +180,14 @@ function markdownReport(reports, commit, options) {
     showClassNames = false,
     showMissing = false,
     showMissingMaxLength = -1,
+    linkMissingLines = false,
+    linkMissingLinesSourceDir = null,
     filteredFiles = null,
     reportName = "Coverage Report",
     onlySummary = false,
   } = options || {};
   const status = (total) =>
     total >= minimumCoverage ? ":white_check_mark:" : ":x:";
-  const crop = (str, at) =>
-    str.length > at ? str.slice(0, at).concat("...") : str;
   // Setup files
   const files = [];
   let output = "## Coverage Report\n";
@@ -190,7 +270,7 @@ function markdownReport(reports, commit, options) {
 }
 
 async function addComment(pullRequestNumber, body, reportName) {
-  const comments = await client.issues.listComments({
+  const comments = await client.rest.issues.listComments({
     issue_number: pullRequestNumber,
     ...github.context.repo,
   });
@@ -199,13 +279,13 @@ async function addComment(pullRequestNumber, body, reportName) {
     comment.body.includes(commentFilter)
   );
   if (comment != null) {
-    await client.issues.updateComment({
+    await client.rest.issues.updateComment({
       comment_id: comment.id,
       body: body,
       ...github.context.repo,
     });
   } else {
-    await client.issues.createComment({
+    await client.rest.issues.createComment({
       issue_number: pullRequestNumber,
       body: body,
       ...github.context.repo,
@@ -262,19 +342,30 @@ function annotationReport(reports, commit, options) {
   }
 }
 
+async function addCheck(body, reportName, sha, conclusion) {
+  const checkName = reportName ? reportName : "coverage";
+
+  await client.rest.checks.create({
+    name: checkName,
+    head_sha: sha,
+    status: "completed",
+    conclusion: conclusion,
+    output: {
+      title: checkName,
+      summary: body,
+    },
+    ...github.context.repo,
+  });
+}
+
 async function listChangedFiles(pullRequestNumber) {
-  const files = await client.pulls.listFiles({
+  const files = await client.rest.pulls.listFiles({
     pull_number: pullRequestNumber,
     ...github.context.repo,
   });
   return files.data.map((file) => file.filename);
 }
 
-/**
- *
- * @param payload
- * @returns {Promise<{pullRequestNumber: number, commit: null}>}
- */
 async function pullRequestInfo(payload = {}) {
   let commit = null;
   let pullRequestNumber = core.getInput("pull_request_number", {
@@ -282,17 +373,17 @@ async function pullRequestInfo(payload = {}) {
   });
 
   if (pullRequestNumber) {
-    // use the supplied PR
+    // Use the supplied PR
     pullRequestNumber = parseInt(pullRequestNumber);
-    const { data } = await client.pulls.get({
+    const { data } = await client.rest.pulls.get({
       pull_number: pullRequestNumber,
       ...github.context.repo,
     });
     commit = data.head.sha;
   } else if (payload.workflow_run) {
-    // fetch all open PRs and match the commit hash.
+    // Fetch all open PRs and match the commit hash.
     commit = payload.workflow_run.head_commit.id;
-    const { data } = await client.pulls.list({
+    const { data } = await client.rest.pulls.list({
       ...github.context.repo,
       state: "open",
     });
@@ -300,10 +391,12 @@ async function pullRequestInfo(payload = {}) {
       .filter((d) => d.head.sha === commit)
       .reduce((n, d) => d.number, "");
   } else if (payload.pull_request) {
-    // try to find the PR from payload
+    // Try to find the PR from payload
     const { pull_request: pullRequest } = payload;
     pullRequestNumber = pullRequest.number;
     commit = pullRequest.head.sha;
+  } else if (payload.after) {
+    commit = payload.after;
   }
 
   return { pullRequestNumber, commit };
@@ -313,5 +406,6 @@ module.exports = {
   action,
   markdownReport,
   addComment,
+  addCheck,
   listChangedFiles,
 };

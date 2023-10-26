@@ -2,7 +2,7 @@ name: Coverage report
 
 on:
   workflow_run:
-    workflows: [ "Test" ]
+    workflows: ["Test"]
     types:
       - completed
 jobs:
@@ -11,12 +11,12 @@ jobs:
     if: ${{ github.event.workflow_run.event == 'pull_request' }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
           ref: ${{ github.event.workflow_run.head_commit.id }}
       - name: Download Coverage Artifacts
-        uses: dawidd6/action-download-artifact@891cccee4b25d3306cf5edafa174ddc1d969871f
+        uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow: ${{ github.event.workflow_run.workflow_id }}
@@ -27,6 +27,5 @@ jobs:
         uses: ./
         with:
           path: coverage/cobertura-coverage.xml
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
           minimum_coverage: 75
           fail_below_threshold: true

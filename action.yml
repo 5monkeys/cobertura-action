@@ -4,6 +4,7 @@ inputs:
   repo_token:
     description: 'The GITHUB_TOKEN for this repo'
     required: true
+    default: ${{ github.token }}
   path:
     description: 'Path to the cobertura file.'
     required: true
@@ -47,8 +48,16 @@ inputs:
     description: 'Crop missing line numbers strings that exceeds this length, provided as an integer.'
     required: false
     default: ''
+  link_missing_lines:
+    description: 'Link missing line numbers.'
+    required: false
+    default: false
+  link_missing_lines_source_dir:
+    description: 'Source directory used for link_missing_lines.'
+    required: false
+    default: ''
   only_changed_files:
-    description: 'Only show coverage for changed files.'
+    description: 'Only show coverage for changed files. (only if a PR is present)'
     required: true
     default: false
   pull_request_number:
@@ -60,7 +69,7 @@ inputs:
     required: false
     default: ''
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'
 branding:
   icon: 'percent'

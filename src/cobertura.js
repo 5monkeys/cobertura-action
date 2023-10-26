@@ -130,19 +130,19 @@ function missingLines(klass) {
   const misses = lines
     .filter((line) => parseInt(line.hits) < 1)
     .map((line) => line.number);
-  return formatLines(statements, misses);
+  return partitionLines(statements, misses);
 }
 
-function formatLines(statements, lines) {
+function partitionLines(statements, lines) {
   /*
    * Detect sequences, with gaps according to 'statements',
    * in 'lines' and compress them in to a range format.
    *
    * Example:
    *
-   * statements = [1,2,3,4,5,10,11,12,13,14]
-   * lines =      [1,2,    5,10,11,   13,14]
-   * Returns: "1-2, 5-11, 13-14"
+   * statements = [1,2,3,4,5,10,11,12,13,14,15,16]
+   * lines =      [1,2,    5,10,11,   13,14,  ,16]
+   * Returns: [[1, 2], [5, 11], [13, 14], [16, 16]]
    */
   const ranges = [];
   let start = null;
@@ -167,13 +167,7 @@ function formatLines(statements, lines) {
   // (Eventually) close range running last iteration
   if (start !== null) ranges.push([start, end]);
 
-  // Convert ranges to a comma separated string
-  return ranges
-    .map((range) => {
-      const [start, end] = range;
-      return start === end ? start : start + "-" + end;
-    })
-    .join(", ");
+  return ranges;
 }
 
 /**

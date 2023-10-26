@@ -19,13 +19,21 @@ artifacts to circumvent this. See the workflows in this project for an implement
 
 ## How it looks like
 
+A comment is added to the pull request with the coverage report.
+
 ![alt text](img/comment.png "Pull request comment with metrics")
+
+A check is added to the workflow run.
+
+![alt text](img/check.png "Check with metrics")
+
+The check will succeed or fail based on your threshold when `fail_below_threshold` is set to `true`, this allows you to mandate coverage checks pass on your [protected branches](https://docs.github.com/en/github/administering-a-repository/defining-the-mergeability-of-pull-requests/about-protected-branches).
 
 ## Inputs
 
-### `repo_token` **Required**
+### `repo_token`
 
-The GITHUB_TOKEN. See [details](https://help.github.com/en/articles/virtual-environments-for-github-actions#github_token-secret).
+The GITHUB_TOKEN. Defaults to `${{github.token}}`
 
 ### `path`
 
@@ -65,7 +73,17 @@ Crop missing line numbers strings that exceeds this length, provided as an integ
 
 Default is no crop.
 
-(Note: "..." is appended to a cropped string)
+(Note: "&hellip;" is appended to a cropped string)
+
+### `link_missing_lines`
+
+Link missing line numbers. This only has an effect when `show_missing` is set to `true`.
+Defaults to `false`.
+
+### `link_missing_lines_source_dir`
+
+Allows specifying a source directory for `link_missing_lines`, that will be inserted
+into the resulting URLs, in-between the commit hash and the file path.
 
 ### `only_changed_files`
 
@@ -78,6 +96,8 @@ Use a unique name for the report and comment.
 ### `pull_request_number` **Optional**
 
 Pull request number associated with the report. This property should be used when workflow trigger is different than `pull_request`.
+
+If no pull request can determine the action will skip adding the comment.
 
 ## Example usage
 
@@ -94,7 +114,6 @@ jobs:
       - uses: 5monkeys/cobertura-action@master
         with:
           path: src/test.xml
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
           minimum_coverage: 75
 ```
 

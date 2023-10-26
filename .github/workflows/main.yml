@@ -13,14 +13,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: '14.x'
+          node-version: '16.x'
       - run: npm ci
       - run: npm run lint
       - run: npm test
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: coverage
           path: coverage/cobertura-coverage.xml
+
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - name: Validate build
+        shell: bash
+        run: |
+          set -e
+          npm ci
+          git add -A
+          npm run package
+          if [ -n "$(git status --porcelain -- dist)" ]; then
+            echo "::error::Build result differs. Run 'npm run package' then commit and push any changes"
+            git status --porcelain -- dist
+            exit 1
+          fi
