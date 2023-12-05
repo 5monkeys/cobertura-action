@@ -43,6 +43,10 @@ The path to the cobertura report. Defaults to `coverage.xml`. Glob pattern is su
 
 If files with 100% coverage should be ignored. Defaults to `true`.
 
+### `repo_base_url`
+
+Base URL for Git server. Defaults to `https://github.com`
+
 ### `minimum_coverage`
 
 The minimum allowed coverage percentage as an integer.
@@ -98,6 +102,10 @@ Use a unique name for the report and comment.
 Pull request number associated with the report. This property should be used when workflow trigger is different than `pull_request`.
 
 If no pull request can determine the action will skip adding the comment.
+
+### `skip_check_run` **Optional**
+
+Use to cause the processing to skip posting a check run result on the PR.
 
 ## Example usage
 

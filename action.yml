@@ -16,6 +16,10 @@ inputs:
   minimum_coverage:
     description: 'Minimum allowed coverage percentage as an integer.'
     required: true
+  repo_base_url:
+    description: 'Based URL for Git server'
+    default: 'https://github.com'
+    required: false
   fail_below_threshold:
     description: 'Fail the action when the minimum coverage was not met.'
     required: false
@@ -60,8 +64,12 @@ inputs:
     description: 'Use a unique name for the report and comment.'
     required: false
     default: ''
+  skip_check_run:
+    description: 'Use to not post a check run comment on the pull_request.'
+    required: false
+    default: 'false'
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
 branding:
   icon: 'percent'
