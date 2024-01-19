@@ -98,3 +98,5 @@ public
 
 # Node modules
 node_modules
+
+*.iml
