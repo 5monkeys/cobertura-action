@@ -61,10 +61,31 @@ inputs:
     description: 'Pull request number associated with the report. This property should be used when workflow trigger is different than pull_request.'
     required: false
     default: ''
+  add_pr_comment:
+    description: 'Add PR comment with coverage report.'
+    required: false
+    default: true
+  add_check:
+    description: 'Add check with coverage report.'
+    required: false
+    default: true
   report_name:
     description: 'Use a unique name for the report and comment.'
     required: false
     default: ''
+  header_text:
+    description: 'Header markdown text which is displayed before the coverage table'
+    required: false
+    default: ''
+  coverage_url:
+    description: 'URL to coverage report.'
+    required: false
+    default: ''
+outputs:
+  comment:
+    description: 'Markdown with coverage report.'
+  url_html:
+    description: 'URL to check containing coverage report in HTML.'
 runs:
   using: 'node16'
   main: 'dist/index.js'

@@ -283,7 +283,6 @@ test("action failing on coverage below threshold", async () => {
     push: { ref: "master" },
   });
   expect(process.exitCode).toBe(1);
-  expect(process.stdout.write).toHaveBeenCalledTimes(1);
   expect(process.stdout.write).toHaveBeenCalledWith(
     "::error::Minimum coverage requirement was not satisfied\n"
   );
@@ -319,7 +318,6 @@ test("action not failing on coverage above threshold", async () => {
     push: { ref: "master" },
   });
   expect(process.exitCode).toBe(0);
-  expect(process.stdout.write).toHaveBeenCalledTimes(0);
 });
 
 test("markdownReport", () => {

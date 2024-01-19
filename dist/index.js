@@ -19407,7 +19407,15 @@ async function action(payload) {
   const onlyChangedFiles = JSON.parse(
     core.getInput("only_changed_files", { required: true })
   );
+  const addReportAsPrComment = JSON.parse(
+    core.getInput("add_pr_comment", { required: false }) || "true"
+  );
+  const addReportAsCheck = JSON.parse(
+    core.getInput("add_check", { required: false }) || "true"
+  );
   const reportName = core.getInput("report_name", { required: false });
+  const headerText = core.getInput("header_text", { required: false }) || "";
+  const coverageUrl = core.getInput("coverage_url", { required: false }) || "";
 
   const changedFiles = onlyChangedFiles
     ? await listChangedFiles(pullRequestNumber)
@@ -19424,21 +19432,27 @@ async function action(payload) {
     linkMissingLines,
     filteredFiles: changedFiles,
     reportName,
+    headerText,
+    coverageUrl,
   });
 
   const belowThreshold = reports.some(
     (report) => Math.floor(report.total) < minimumCoverage
   );
 
-  if (pullRequestNumber) {
+  core.setOutput("comment", comment);
+
+  if (pullRequestNumber && addReportAsPrComment) {
     await addComment(pullRequestNumber, comment, reportName);
   }
-  await addCheck(
-    comment,
-    reportName,
-    commit,
-    failBelowThreshold ? (belowThreshold ? "failure" : "success") : "neutral"
-  );
+  if (addReportAsCheck) {
+    await addCheck(
+      comment,
+      reportName,
+      commit,
+      failBelowThreshold ? (belowThreshold ? "failure" : "success") : "neutral"
+    );
+  }
 
   if (failBelowThreshold && belowThreshold) {
     core.setFailed("Minimum coverage requirement was not satisfied");
@@ -19512,6 +19526,8 @@ function markdownReport(reports, commit, options) {
     linkMissingLines = false,
     filteredFiles = null,
     reportName = "Coverage Report",
+    headerText = "",
+    coverageUrl = "",
   } = options || {};
   const status = (total) =>
     total >= minimumCoverage ? ":white_check_mark:" : ":x:";
@@ -19557,6 +19573,9 @@ function markdownReport(reports, commit, options) {
     const total = Math.floor(report.total);
     const linesTotal = Math.floor(report.line);
     const branchTotal = Math.floor(report.branch);
+    const allFilesText = coverageUrl
+      ? `[All files](${coverageUrl})`
+      : "**All files**";
     const table = [
       [
         "File",
@@ -19575,7 +19594,7 @@ function markdownReport(reports, commit, options) {
         showMissing ? ":-:" : undefined,
       ],
       [
-        "**All files**",
+        allFilesText,
         `\`${total}%\``,
         showLine ? `\`${linesTotal}%\`` : undefined,
         showBranch ? `\`${branchTotal}%\`` : undefined,
@@ -19588,6 +19607,9 @@ function markdownReport(reports, commit, options) {
         return `| ${row.filter(Boolean).join(" | ")} |`;
       })
       .join("\n");
+    if (headerText) {
+      output += `${headerText}\n\n`;
+    }
     const titleText = `<strong>${reportName}${folder}</strong>`;
     output += `${titleText}\n\n${table}\n\n`;
   }
@@ -19602,9 +19624,11 @@ async function addComment(pullRequestNumber, body, reportName) {
     issue_number: pullRequestNumber,
     ...github.context.repo,
   });
-  const commentFilter = reportName ? reportName : credits;
-  const comment = comments.data.find((comment) =>
-    comment.body.includes(commentFilter)
+  const commentFilter = reportName ? `<strong>${reportName}</strong>` : "";
+  const comment = comments.data.find(
+    (comment) =>
+      comment.body.includes(credits) &&
+      (!commentFilter || comment.body.includes(commentFilter))
   );
   if (comment != null) {
     await client.rest.issues.updateComment({
@@ -19612,19 +19636,21 @@ async function addComment(pullRequestNumber, body, reportName) {
       body: body,
       ...github.context.repo,
     });
+    core.info("PR Comment updated");
   } else {
     await client.rest.issues.createComment({
       issue_number: pullRequestNumber,
       body: body,
       ...github.context.repo,
     });
+    core.info("PR Comment created");
   }
 }
 
 async function addCheck(body, reportName, sha, conclusion) {
   const checkName = reportName ? reportName : "coverage";
 
-  await client.rest.checks.create({
+  const check = await client.rest.checks.create({
     name: checkName,
     head_sha: sha,
     status: "completed",
@@ -19635,6 +19661,9 @@ async function addCheck(body, reportName, sha, conclusion) {
     },
     ...github.context.repo,
   });
+
+  core.info("Check HTML URL: " + check.data.html_url);
+  core.setOutput("url_html", check.data.html_url);
 }
 
 async function listChangedFiles(pullRequestNumber) {
@@ -19652,6 +19681,7 @@ async function pullRequestInfo(payload = {}) {
   });
 
   if (pullRequestNumber) {
+    core.info("Use supplied PR#");
     // Use the supplied PR
     pullRequestNumber = parseInt(pullRequestNumber);
     const { data } = await client.rest.pulls.get({
@@ -19662,6 +19692,7 @@ async function pullRequestInfo(payload = {}) {
   } else if (payload.workflow_run) {
     // Fetch all open PRs and match the commit hash.
     commit = payload.workflow_run.head_commit.id;
+    core.info("Find PR# from workflow_run payload - head commit " + commit);
     const { data } = await client.rest.pulls.list({
       ...github.context.repo,
       state: "open",
@@ -19671,13 +19702,29 @@ async function pullRequestInfo(payload = {}) {
       .reduce((n, d) => d.number, "");
   } else if (payload.pull_request) {
     // Try to find the PR from payload
+    core.info(
+      `Get PR# from pull_request payload (action=${payload.action}, state=${payload.pull_request.state})`
+    );
     const { pull_request: pullRequest } = payload;
-    pullRequestNumber = pullRequest.number;
-    commit = pullRequest.head.sha;
+    if (payload.action === "closed") {
+      if (pullRequest.merged) {
+        core.info("PR was merged");
+        pullRequestNumber = pullRequest.number;
+        commit = pullRequest.merge_commit_sha;
+      } else {
+        core.info("PR was closed without merging");
+      }
+    } else {
+      pullRequestNumber = pullRequest.number;
+      commit = pullRequest.head.sha;
+    }
   } else if (payload.after) {
+    core.info("Use payload.after as commit");
     commit = payload.after;
   }
 
+  core.info("PR number: " + pullRequestNumber);
+  core.info("Commit: " + commit);
   return { pullRequestNumber, commit };
 }
 

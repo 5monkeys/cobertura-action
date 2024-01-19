@@ -98,6 +98,22 @@ Pull request number associated with the report. This property should be used whe
 
 If no pull request can determine the action will skip adding the comment.
 
+### `add_pr_comment` **Optional**
+
+### `add_check` **Optional**
+
+### `header_text` **Optional**
+
+### `coverage_url` **Optional**
+
+
+## Outputs
+
+### `comment`
+
+### `url_html`
+
+
 ## Example usage
 
 ```yaml
