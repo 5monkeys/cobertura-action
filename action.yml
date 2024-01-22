@@ -86,6 +86,14 @@ outputs:
     description: 'Markdown with coverage report.'
   url_html:
     description: 'URL to check containing coverage report in HTML.'
+  lines_total:
+    description: 'Number of total lines.'
+  lines_covered:
+    description: 'Number of covered lines.'
+  branches_total:
+    description: 'Number of total branches.'
+  branches_covered:
+    description: 'Number of covered branches.'
 runs:
   using: 'node16'
   main: 'dist/index.js'

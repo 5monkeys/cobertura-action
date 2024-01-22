@@ -113,6 +113,14 @@ If no pull request can determine the action will skip adding the comment.
 
 ### `url_html`
 
+### `lines_total`
+
+### `lines_covered`
+
+### `branches_total`
+
+### `branches_covered`
+
 
 ## Example usage
 

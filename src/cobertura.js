@@ -36,6 +36,7 @@ async function readCoverageFromFile(path, options) {
     .filter((file) => options.skipCovered === false || file.total < 100);
   return {
     ...calculateRates(coverage),
+    ...calculateLinesAndBranches(coverage),
     files,
   };
 }
@@ -110,6 +111,19 @@ function calculateRates(element) {
     total,
     line,
     branch,
+  };
+}
+
+function calculateLinesAndBranches(element) {
+  const validLines = parseInt(element["lines-valid"]) || 0;
+  const coveredLines = parseInt(element["lines-covered"]) || 0;
+  const validBranches = parseInt(element["branches-valid"]) || 0;
+  const coveredBranches = parseInt(element["branches-covered"]) || 0;
+  return {
+    validLines,
+    coveredLines,
+    validBranches,
+    coveredBranches,
   };
 }
 

@@ -19436,6 +19436,8 @@ async function action(payload) {
     coverageUrl,
   });
 
+  setCoverageOutput(reports);
+
   const belowThreshold = reports.some(
     (report) => Math.floor(report.total) < minimumCoverage
   );
@@ -19513,6 +19515,27 @@ function formatMissingLines(
     : wrapped;
   const joined = linked.join(separator) + (isCropped ? " &hellip;" : "");
   return joined || " ";
+}
+
+function setCoverageOutput(reports) {
+  var totalLines = 0;
+  var totalCoveredLines = 0;
+  var totalBranches = 0;
+  var totalCoveredBranches = 0;
+  for (const report of reports) {
+    totalLines += report.validLines;
+    totalCoveredLines += report.coveredLines;
+    totalBranches += report.validBranches;
+    totalCoveredBranches += report.coveredBranches;
+  }
+
+  core.info("Lines: " + totalCoveredLines + "/" + totalLines);
+  core.info("Branches: " + totalCoveredBranches + "/" + totalBranches);
+
+  core.setOutput("lines_total", totalLines);
+  core.setOutput("lines_covered", totalCoveredLines);
+  core.setOutput("branches_total", totalBranches);
+  core.setOutput("branches_covered", totalCoveredBranches);
 }
 
 function markdownReport(reports, commit, options) {
@@ -19780,6 +19803,7 @@ async function readCoverageFromFile(path, options) {
     .filter((file) => options.skipCovered === false || file.total < 100);
   return {
     ...calculateRates(coverage),
+    ...calculateLinesAndBranches(coverage),
     files,
   };
 }
@@ -19854,6 +19878,19 @@ function calculateRates(element) {
     total,
     line,
     branch,
+  };
+}
+
+function calculateLinesAndBranches(element) {
+  const validLines = parseInt(element["lines-valid"]) || 0;
+  const coveredLines = parseInt(element["lines-covered"]) || 0;
+  const validBranches = parseInt(element["branches-valid"]) || 0;
+  const coveredBranches = parseInt(element["branches-covered"]) || 0;
+  return {
+    validLines,
+    coveredLines,
+    validBranches,
+    coveredBranches,
   };
 }
 
