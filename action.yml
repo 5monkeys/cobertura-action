@@ -95,7 +95,7 @@ outputs:
   branches_covered:
     description: 'Number of covered branches.'
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
 branding:
   icon: 'percent'
