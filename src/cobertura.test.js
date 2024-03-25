@@ -133,7 +133,7 @@ test("processCoverage(test-istanbul-single.xml, {skipCovered: false})", async ()
     "./src/fixtures/test-istanbul-single.xml",
     {
       skipCovered: false,
-    }
+    },
   );
   expect(reports[0].total).toBe(100);
   const files = reports[0].files;
