@@ -66,7 +66,7 @@ async function processCoverage(path, options) {
         ...report,
         folder,
       };
-    })
+    }),
   );
 }
 
@@ -124,7 +124,7 @@ function missingLines(klass) {
   if (parseFloat(klass["line-rate"]) >= 1.0) return "";
 
   const lines = getLines(klass).sort(
-    (a, b) => parseInt(a.number) - parseInt(b.number)
+    (a, b) => parseInt(a.number) - parseInt(b.number),
   );
   const statements = lines.map((line) => line.number);
   const misses = lines
