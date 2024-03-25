@@ -39,7 +39,6 @@
     "eslint": "^7.19.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "fetch-mock-jest": "^1.5.1",
     "jest": "^27.5.1",
     "prettier": "^2.8.0"
   }
