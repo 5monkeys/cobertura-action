@@ -94,7 +94,8 @@ function formatFileUrl(sourceDir, fileName, commit) {
   // Strip leading and trailing slashes.
   sourceDir = sourceDir.replace(/\/$/, "").replace(/^\//, "");
   const path = (sourceDir ? `${sourceDir}/` : "") + fileName;
-  return `https://github.com/${repo.owner}/${repo.repo}/blob/${commit}/${path}`;
+  const githubUrl = process.env["GITHUB_SERVER_URL"] || "https://github.com";
+  return `${githubUrl}/${repo.owner}/${repo.repo}/blob/${commit}/${path}`;
 }
 
 function formatRangeText([start, end]) {
