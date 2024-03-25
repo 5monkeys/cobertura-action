@@ -47,7 +47,6 @@ beforeEach(() => {
   apiMock = mockAgent.get("https://api.github.com");
   process.env["INPUT_REPO_TOKEN"] = "hunter2";
   process.env["GITHUB_REPOSITORY"] = `${owner}/${repo}`;
-  process.env["GITHUB_TOKEN"] = "supersecret";
   process.exitCode = 0;
   process.stdout.write = jest.fn();
 });
