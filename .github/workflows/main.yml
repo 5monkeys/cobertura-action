@@ -20,7 +20,7 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm test
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: coverage
           path: coverage/cobertura-coverage.xml
