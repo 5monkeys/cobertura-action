@@ -875,5 +875,7 @@ test("addCheck", async () => {
   apiMock
     .intercept({ method: "POST", path: `/repos/${owner}/${repo}/check-runs` })
     .reply(200);
+
   await addCheck("foo", "bar", "fake_sha", "success");
+  mockAgent.assertNoPendingInterceptors();
 });
