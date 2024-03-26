@@ -52,6 +52,10 @@ inputs:
     description: 'Only show coverage for changed files. (only if a PR is present)'
     required: true
     default: false
+  collapse_coverage:
+    description: 'Collapses coverage report into <details>'
+    required: true
+    default: "false"
   pull_request_number:
     description: 'Pull request number associated with the report. This property should be used when workflow trigger is different than pull_request.'
     required: false

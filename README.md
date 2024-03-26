@@ -89,6 +89,10 @@ into the resulting URLs, in-between the commit hash and the file path.
 
 Only show coverage for changed files.
 
+### `collapse_coverage`
+
+Collapses coverage report into `<details>`, [supported](https://github.github.com/gfm/#html-blocks) by GitHub
+
 ### `report_name`
 
 Use a unique name for the report and comment.
