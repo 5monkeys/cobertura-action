@@ -2,6 +2,7 @@ const fs = require("fs").promises;
 const xml2js = require("xml2js");
 const util = require("util");
 const glob = require("glob-promise");
+const pathLib = require("path");
 const parseString = util.promisify(xml2js.parseString);
 
 /**
@@ -37,13 +38,12 @@ async function readCoverageFromFile(path, options) {
 }
 
 function trimFolder(path, positionOfFirstDiff) {
-  const lastFolder = path.lastIndexOf("/") + 1;
-  if (positionOfFirstDiff >= lastFolder) {
-    return path.substr(lastFolder);
+  const pathParts = path.split(pathLib.sep);
+
+  if (positionOfFirstDiff >= pathParts.length - 1) {
+    return pathParts[pathParts.length-1];
   } else {
-    const startOffset = Math.min(positionOfFirstDiff - 1, lastFolder);
-    const length = path.length - startOffset - lastFolder - 2; // remove filename
-    return path.substr(startOffset, length);
+    return pathLib.join(...pathParts.slice(positionOfFirstDiff, pathParts.length-1));
   }
 }
 
@@ -176,20 +176,20 @@ function partitionLines(statements, lines) {
  * @returns number
  */
 function longestCommonPrefix(paths) {
-  let prefix = "";
   if (paths === null || paths.length === 0) return 0;
 
-  for (let i = 0; i < paths[0].length; i++) {
-    const char = paths[0][i]; // loop through all characters of the very first string.
+  const pathParts = paths.map((p) => p.split(pathLib.sep));
+
+  for (let i = 0; i < pathParts[0].length; i++) {
+    const pi = pathParts[0][i]; // loop through all parts of first path
 
     for (let j = 1; j < paths.length; j++) {
-      // loop through all other strings in the array
-      if (paths[j][i] !== char) return prefix.length;
+      // loop through all other paths in array
+      if (pathParts[j][i] !== pi) return i;
     }
-    prefix = prefix + char;
   }
 
-  return prefix.length;
+  return pathParts[0].length;
 }
 
 module.exports = {

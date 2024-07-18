@@ -263,11 +263,12 @@ test("processCoverage(test-missing-lines.xml, {skipCovered: true})", async () =>
 });
 
 test("trimFolder", () => {
-  expect(trimFolder("/a/b/c/file.xml", 7)).toBe("file.xml");
-  expect(trimFolder("/a/b/c/file.xml", 3)).toBe("/b/c");
+  expect(trimFolder("/a/b/c/file.xml", 4)).toBe("file.xml");
+  expect(trimFolder("/a/b/c/file.xml", 2)).toBe("b/c");
 });
 
 test("longestCommonPrefix", () => {
   expect(longestCommonPrefix(null)).toBe(0);
   expect(longestCommonPrefix([])).toBe(0);
+  expect(longestCommonPrefix(['a/b-c', 'a/b-d'])).toBe(1)
 });

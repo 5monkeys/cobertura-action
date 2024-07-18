@@ -39031,11 +39031,11 @@ function markdownReport(reports, commit, options) {
   } = options || {};
   const status = (total) =>
     total >= minimumCoverage ? ":white_check_mark:" : ":x:";
-  // Setup files
-  const files = [];
   let output = "";
   for (const report of reports) {
     const folder = reports.length <= 1 ? "" : ` ${report.folder}`;
+    // Setup files
+    const files = [];
     for (const file of report.files.filter(
       (file) => filteredFiles == null || filteredFiles.includes(file.filename),
     )) {
@@ -39215,6 +39215,7 @@ const fs = (__nccwpck_require__(7147).promises);
 const xml2js = __nccwpck_require__(6189);
 const util = __nccwpck_require__(3837);
 const glob = __nccwpck_require__(8252);
+const pathLib = __nccwpck_require__(1017);
 const parseString = util.promisify(xml2js.parseString);
 
 /**
@@ -39250,13 +39251,12 @@ async function readCoverageFromFile(path, options) {
 }
 
 function trimFolder(path, positionOfFirstDiff) {
-  const lastFolder = path.lastIndexOf("/") + 1;
-  if (positionOfFirstDiff >= lastFolder) {
-    return path.substr(lastFolder);
+  const pathParts = path.split(pathLib.sep);
+
+  if (positionOfFirstDiff >= pathParts.length - 1) {
+    return pathParts[pathParts.length-1];
   } else {
-    const startOffset = Math.min(positionOfFirstDiff - 1, lastFolder);
-    const length = path.length - startOffset - lastFolder - 2; // remove filename
-    return path.substr(startOffset, length);
+    return pathLib.join(...pathParts.slice(positionOfFirstDiff, pathParts.length-1));
   }
 }
 
@@ -39389,20 +39389,20 @@ function partitionLines(statements, lines) {
  * @returns number
  */
 function longestCommonPrefix(paths) {
-  let prefix = "";
   if (paths === null || paths.length === 0) return 0;
 
-  for (let i = 0; i < paths[0].length; i++) {
-    const char = paths[0][i]; // loop through all characters of the very first string.
+  const pathParts = paths.map((p) => p.split(pathLib.sep));
+
+  for (let i = 0; i < pathParts[0].length; i++) {
+    const pi = pathParts[0][i]; // loop through all parts of first path
 
     for (let j = 1; j < paths.length; j++) {
-      // loop through all other strings in the array
-      if (paths[j][i] !== char) return prefix.length;
+      // loop through all other paths in array
+      if (pathParts[j][i] !== pi) return i;
     }
-    prefix = prefix + char;
   }
 
-  return prefix.length;
+  return pathParts[0].length;
 }
 
 module.exports = {
