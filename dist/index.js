@@ -762,7 +762,7 @@ class Summary {
     /**
      * If the summary buffer is empty
      *
-     * @returns {boolen} true if the buffer is empty
+     * @returns {boolean} true if the buffer is empty
      */
     isEmptyBuffer() {
         return this._buffer.length === 0;
@@ -851,10 +851,10 @@ class Summary {
         return this.addRaw(element).addEOL();
     }
     /**
-     * Adds a collapsable HTML details element to the summary buffer
+     * Adds a collapsible HTML details element to the summary buffer
      *
      * @param {string} label text for the closed state
-     * @param {string} content collapsable content
+     * @param {string} content collapsible content
      *
      * @returns {Summary} summary instance
      */
@@ -1228,7 +1228,7 @@ exports.defaults = {
 };
 exports.GitHub = core_1.Octokit.plugin(plugin_rest_endpoint_methods_1.restEndpointMethods, plugin_paginate_rest_1.paginateRest).defaults(exports.defaults);
 /**
- * Convience function to correctly format Octokit Options to pass into the constructor.
+ * Convenience function to correctly format Octokit Options to pass into the constructor.
  *
  * @param     token    the repo PAT or GITHUB_TOKEN
  * @param     options  other options to set
@@ -6202,7 +6202,7 @@ function maybeCallback(cb) {
 
 var normalize = pathModule.normalize;
 
-// Regexp that finds the next partion of a (partial) path
+// Regexp that finds the next portion of a (partial) path
 // result is [base_with_slash, base], e.g. ['somedir/', 'somedir']
 if (isWindows) {
   var nextPartRe = /(.*?)(?:[\/\\]+|$)/g;
@@ -10024,7 +10024,7 @@ function onceStrict (fn) {
     var parent = parser.tags[parser.tags.length - 1] || parser
     var tag = parser.tag = { name: parser.tagName, attributes: {} }
 
-    // will be overridden if tag contails an xmlns="foo" or xmlns:foo="bar"
+    // will be overridden if tag contains an xmlns="foo" or xmlns:foo="bar"
     if (parser.opt.xmlns) {
       tag.ns = parent.ns
     }
@@ -14397,7 +14397,7 @@ class Client extends DispatcherBase {
     }
 
     if (maxConcurrentStreams != null && (typeof maxConcurrentStreams !== 'number' || maxConcurrentStreams < 1)) {
-      throw new InvalidArgumentError('maxConcurrentStreams must be a possitive integer, greater than 0')
+      throw new InvalidArgumentError('maxConcurrentStreams must be a positive integer, greater than 0')
     }
 
     if (typeof connect !== 'function') {
@@ -14444,7 +14444,7 @@ class Client extends DispatcherBase {
       ? null
       : {
         // streams: null, // Fixed queue of streams - For future support of `push`
-          openStreams: 0, // Keep track of them to decide wether or not unref the session
+          openStreams: 0, // Keep track of them to decide whether or not unref the session
           maxConcurrentStreams: maxConcurrentStreams != null ? maxConcurrentStreams : 100 // Max peerConcurrentStreams for a Node h2 server
         }
     this[kHost] = `${this[kUrl].hostname}${this[kUrl].port ? `:${this[kUrl].port}` : ''}`
@@ -15640,7 +15640,7 @@ function write (client, request) {
   // Sending a payload body on a request that does not
   // expect it can cause undefined behavior on some
   // servers and corrupt connection state. Do not
-  // re-use the connection for further requests.
+  // reuse the connection for further requests.
 
   const expectsPayload = (
     method === 'PUT' ||
@@ -15854,7 +15854,7 @@ function writeH2 (client, session, request) {
   }
 
   // https://tools.ietf.org/html/rfc7540#section-8.3
-  // :path and :scheme headers must be omited when sending CONNECT
+  // :path and :scheme headers must be omitted when sending CONNECT
 
   headers[HTTP2_HEADER_PATH] = path
   headers[HTTP2_HEADER_SCHEME] = 'https'
@@ -15866,7 +15866,7 @@ function writeH2 (client, session, request) {
   // Sending a payload body on a request that does not
   // expect it can cause undefined behavior on some
   // servers and corrupt connection state. Do not
-  // re-use the connection for further requests.
+  // reuse the connection for further requests.
 
   const expectsPayload = (
     method === 'PUT' ||
@@ -15981,7 +15981,7 @@ function writeH2 (client, session, request) {
   // })
 
   // stream.on('push', headers => {
-  //   // TODO(HTTP/2): Suppor push
+  //   // TODO(HTTP/2): Support push
   // })
 
   // stream.on('trailers', headers => {
@@ -17338,10 +17338,10 @@ const { InvalidArgumentError, ConnectTimeoutError } = __nccwpck_require__(8045)
 
 let tls // include tls conditionally since it is not always available
 
-// TODO: session re-use does not wait for the first
+// TODO: session reuse does not wait for the first
 // connection to resolve the session and might therefore
 // resolve the same servername multiple times even when
-// re-use is enabled.
+// reuse is enabled.
 
 let SessionCache
 // FIXME: remove workaround when the Node bug is fixed
@@ -19206,7 +19206,7 @@ function extractBody (object, keepalive = false) {
 
     // Set action to this step: run the multipart/form-data
     // encoding algorithm, with object’s entry list and UTF-8.
-    // - This ensures that the body is immutable and can't be changed afterwords
+    // - This ensures that the body is immutable and can't be changed afterwards
     // - That the content-length is calculated in advance.
     // - And that all parts are pre-encoded and ready to be sent.
 
@@ -20403,7 +20403,7 @@ function serializeAMimeType (mimeType) {
     // 4. If value does not solely contain HTTP token code
     //    points or value is the empty string, then:
     if (!HTTP_TOKEN_CODEPOINTS.test(value)) {
-      // 1. Precede each occurence of U+0022 (") or
+      // 1. Precede each occurrence of U+0022 (") or
       //    U+005C (\) in value with U+005C (\).
       value = value.replace(/(\\|")/g, '\\$1')
 
@@ -24594,7 +24594,7 @@ class Request {
   }
 
   // Returns a boolean indicating whether or not request is for a history
-  // navigation (a.k.a. back-foward navigation).
+  // navigation (a.k.a. back-forward navigation).
   get isHistoryNavigation () {
     webidl.brandCheck(this, Request)
 
@@ -28577,8 +28577,8 @@ class RedirectHandler {
 
         For status 300, which is "Multiple Choices", the spec mentions both generating a Location
         response header AND a response body with the other possible location to follow.
-        Since the spec explicitily chooses not to specify a format for such body and leave it to
-        servers and browsers implementors, we ignore the body as there is no specified way to eventually parse it.
+        Since the spec explicitly chooses not to specify a format for such body and leave it to
+        servers and browsers implementers, we ignore the body as there is no specified way to eventually parse it.
       */
     } else {
       return this.handler.onData(chunk)
@@ -28593,7 +28593,7 @@ class RedirectHandler {
         TLDR: undici always ignores 3xx response trailers as they are not expected in case of redirections
         and neither are useful if present.
 
-        See comment on onData method above for more detailed informations.
+        See comment on onData method above for more detailed information.
       */
 
       this.location = null
@@ -38088,7 +38088,7 @@ function wrappy (fn, cb) {
       }
       val = '' + val || '';
       if (val.match(/--/)) {
-        throw new Error("Comment text cannot contain double-hypen: " + val);
+        throw new Error("Comment text cannot contain double-hyphen: " + val);
       }
       return this.assertLegalChar(val);
     };
