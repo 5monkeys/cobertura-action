@@ -38908,6 +38908,9 @@ async function action(payload) {
   showMissingMaxLength = showMissingMaxLength
     ? parseInt(showMissingMaxLength)
     : -1;
+  const showMinimumCoverageFiles = JSON.parse(
+    core.getInput("show_minimum_coverage_files", { required: false }) || "true",
+  );
   const linkMissingLines = JSON.parse(
     core.getInput("link_missing_lines", { required: false }) || "false",
   );
@@ -38930,6 +38933,7 @@ async function action(payload) {
     showClassNames,
     showMissing,
     showMissingMaxLength,
+    showMinimumCoverageFiles,
     linkMissingLines,
     linkMissingLinesSourceDir,
     filteredFiles: changedFiles,
@@ -39024,6 +39028,7 @@ function markdownReport(reports, commit, options) {
     showClassNames = false,
     showMissing = false,
     showMissingMaxLength = -1,
+    showMinimumCoverageFiles = true,
     linkMissingLines = false,
     linkMissingLinesSourceDir = null,
     filteredFiles = null,
@@ -39042,6 +39047,9 @@ function markdownReport(reports, commit, options) {
       const fileTotal = Math.floor(file.total);
       const fileLines = Math.floor(file.line);
       const fileBranch = Math.floor(file.branch);
+      if (!showMinimumCoverageFiles && fileTotal > minimumCoverage) {
+        continue;
+      }
       files.push([
         escapeMarkdown(showClassNames ? file.name : file.filename),
         `\`${fileTotal}%\``,

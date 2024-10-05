@@ -75,6 +75,11 @@ Default is no crop.
 
 (Note: "&hellip;" is appended to a cropped string)
 
+### `show_minimum_coverage_files`
+
+Show files that meet minimum coverage requirements
+Defaults to `true`
+
 ### `link_missing_lines`
 
 Link missing line numbers. This only has an effect when `show_missing` is set to `true`.
