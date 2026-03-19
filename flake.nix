@@ -10,11 +10,11 @@
       in
       {
         packages = flakeUtils.lib.flattenTree {
-          nodejs_20 = pkgs.nodejs_20;
+          nodejs_24 = pkgs.nodejs_24;
         };
         devShell = pkgs.mkShell {
           buildInputs = with self.packages.${system}; [
-            nodejs_20
+            nodejs_24
           ];
         };
       });
